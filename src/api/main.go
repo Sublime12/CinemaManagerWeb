@@ -1,11 +1,16 @@
 package main
 
-import "github.com/gin-gonic/gin"
+import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+)
 
 func main() {
 	router := gin.Default()
-	router.GET("/", func(c *gin.Context) {
-		c.JSON(200, gin.H{
+	api := router.Group("/api")
+	api.GET("/", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{
 			"message": "hello world",
 		})
 	})
