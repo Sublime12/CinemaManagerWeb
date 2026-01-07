@@ -1,0 +1,10 @@
+tls:
+  certificates:
+    - certFile: /certs/cinema.localhost.pem
+      keyFile: /certs/cinema.localhost-key.pem
+
+  stores:
+    default:
+      defaultCertificate:
+        certFile: /certs/cinema.localhost.pem
+        keyFile: /certs/cinema.localhost-key.pem

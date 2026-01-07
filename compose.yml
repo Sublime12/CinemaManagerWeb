@@ -1,0 +1,128 @@
+services:
+  traefik:
+    container_name: cinema_proxy
+    image: traefik:v3.4
+    ports:
+      - "80:80"
+      - "443:443"
+#      - "8080:8080"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./traefik:/dynamic:ro
+      - ./certs:/certs:ro
+    networks:
+      - web
+      - internal
+    command:
+      # EntryPoints
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.web.http.redirections.entrypoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entrypoint.scheme=https"
+      - "--entrypoints.web.http.redirections.entrypoint.permanent=true"
+      - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.websecure.http.tls=true"
+
+      # Attach the static configuration tls.yaml file that contains the tls configuration settings
+      - "--providers.file.directory=/dynamic"
+      - "--providers.file.watch=true"
+
+      # Providers
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--providers.docker.network=web"
+
+      # API & Dashboard
+      - "--api.dashboard=true"
+      - "--api.insecure=true"
+
+      # Observability
+      - "--log.level=INFO"
+      - "--accesslog=true"
+      - "--metrics.prometheus=true"
+    labels:
+      # Enable self‑routing
+      - "traefik.enable=true"
+      - "traefik.docker.network=web"
+
+      # Dashboard router
+      - "traefik.http.routers.dashboard.rule=Host(`dashboard.docker.localhost`)"
+      - "traefik.http.routers.dashboard.entrypoints=websecure"
+      - "traefik.http.routers.dashboard.service=api@internal"
+      - "traefik.http.routers.dashboard.tls=true"
+
+
+  api:
+    container_name: cinema_api
+    build:
+      context: ./src/api
+      dockerfile: Dockerfile
+      args:
+        - DOCKER_USER
+#    env_file: .env
+#    environment:
+#      - PYTHONPATH=/app
+    working_dir: /app
+#    depends_on:
+#      db:
+#        condition: service_healthy
+#      redis:
+#        condition: service_healthy
+    ports:
+      - "${API_PORT:-8080}:8080"
+#    volumes:
+#      - ./src/api:/app
+#      - /var/run/docker.sock:/var/run/docker.sock
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.api.rule=Host(`cinema.localhost`) && PathPrefix(`/api`)"
+      - "traefik.http.routers.api.entrypoints=websecure"
+      - "traefik.http.routers.api.tls=true"
+      - "traefik.docker.network=web"
+    develop:
+      watch: 
+        - action: sync 
+          path: ./src/api/
+          target: /app
+          initial_sync: true
+        - action: rebuild
+          path: ./src/api
+          
+    networks:
+      - web
+      - internal
+  frontend:
+    container_name: cinema_frontend
+    build:
+      context: ./src/frontend
+      dockerfile: Dockerfile
+      target: ${FRONTEND_TARGET:-dev}
+      args:
+        VITE_API_URL: ${VITE_API_URL:-https://cinema.localhost/api}
+    depends_on:
+      api:
+        condition: service_started
+    environment:
+      VITE_API_URL: ${VITE_API_URL:-https://cinema.localhost/api}
+      CHOKIDAR_USEPOLLING: "true"
+    volumes:
+      - ./src/frontend:/app
+      - /app/node_modules
+    ports:
+      - "${FRONTEND_PORT:-5173}:${FRONTEND_INTERNAL_PORT:-5173}"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=web"
+      - "traefik.http.routers.frontend.rule=Host(`cinema.localhost`)"
+      - "traefik.http.routers.frontend.entrypoints=websecure"
+      - "traefik.http.routers.frontend.tls=true"
+      - "traefik.http.services.frontend.loadbalancer.server.port=${FRONTEND_INTERNAL_PORT:-5173}"
+    networks:
+      - web
+
+# volumes:
+
+networks:
+  web:
+    name: web
+  internal:
+    internal: true
