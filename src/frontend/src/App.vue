@@ -1,8 +1,12 @@
 <script setup lang="ts">
 import { RouterLink, RouterView } from 'vue-router';
 import HelloWorld from './components/HelloWorld.vue';
+import { useHelloworld } from './components/Helloworld/query';
 
 const a = 'bonjour';
+
+const data = useHelloworld()
+
 </script>
 
 <template>

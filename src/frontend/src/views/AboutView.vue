@@ -1,6 +1,12 @@
+<script setup="ts">
+import { useHelloworld } from '@/components/Helloworld/query';
+
+const { data } = useHelloworld()
+</script>
+
 <template>
   <div class="about">
-    <h1>This is an about page</h1>
+    <h1>This is an about pagexx {{ data }}</h1>
   </div>
 </template>
 
