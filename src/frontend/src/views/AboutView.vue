@@ -1,7 +1,7 @@
 <script setup="ts">
 import { useHelloworld } from '@/components/Helloworld/query';
 
-const { data } = useHelloworld()
+const { data } = useHelloworld();
 </script>
 
 <template>
