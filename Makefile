@@ -3,6 +3,9 @@ COMPOSE := docker compose
 up:
 	$(COMPOSE) --profile dev up -d --build
 
+watch: 
+	$(COMPOSE) --profile dev up --build --watch
+
 down:
 	$(COMPOSE) down
 

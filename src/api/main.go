@@ -1,6 +1,7 @@
 package main
 
 import (
+	"api/movies"
 	"context"
 	"fmt"
 	"net/http"
@@ -37,6 +38,8 @@ func main() {
 
 	router := gin.Default()
 	api := router.Group("/api")
+	movies.MapMoviesRoutes(api)
+
 	api.GET("/", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
 			"message": "hello world",
