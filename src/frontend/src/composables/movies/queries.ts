@@ -1,5 +1,6 @@
 import { api } from '@/api';
 import { useQuery } from '@tanstack/vue-query';
+import type { Ref } from 'vue';
 import z from 'zod';
 
 const MovieSchema = z.object({
@@ -16,9 +17,19 @@ export function useGetMoviesQuery() {
   return useQuery({
     queryKey: ['get-movies'],
     queryFn: async () => {
-      const movies = await api.get<Movie[]>(`/movies`);
+      const response = await api.get<Movie[]>(`/movies`);
 
-      return MoviesSchema.parse(movies.data);
+      return MoviesSchema.parse(response.data);
     },
   });
+}
+
+export function useGetMovieQuery(id: Ref<string>) {
+  return useQuery({
+    queryKey: ['get-movie', id.value],
+    queryFn: async () => {
+      const response = await api.get<Movie>(`/movies/${id.value}`);
+      return MovieSchema.parse(response.data)
+    },
+  })
 }

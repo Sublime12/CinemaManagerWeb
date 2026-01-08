@@ -1,4 +1,4 @@
-<script setup="ts">
+<script setup lang="ts">
 import { useHelloworld } from '@/components/Helloworld/query';
 
 const { data } = useHelloworld();
