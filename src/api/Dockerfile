@@ -14,7 +14,8 @@ COPY . /app
 
 RUN --mount=type=cache,target=/root/.cache/go-build \
     go build -o cinema_manager_api
-# RUN go build -o ./cinema_manager_api
+RUN --mount=type=cache,target=/root/.cache/go-build \
+    go build -o cinema_manager_seeder ./seeds
 
 FROM alpine:latest
 
@@ -23,6 +24,7 @@ FROM alpine:latest
 RUN mkdir -p /app
 WORKDIR /app
 COPY --from=builder /app/cinema_manager_api .
+COPY --from=builder /app/cinema_manager_seeder .
 
 EXPOSE 8080
 

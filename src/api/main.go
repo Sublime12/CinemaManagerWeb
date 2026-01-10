@@ -1,8 +1,8 @@
 package main
 
 import (
+	"api/auth"
 	"api/movies"
-	"context"
 	"fmt"
 	"net/http"
 	"os"
@@ -26,19 +26,19 @@ func main() {
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Error on initializing db: ", err)
 	}
-	ctx := context.Background()
+	// ctx := context.Background()
 
-	db.AutoMigrate(&Product{})
+	db.AutoMigrate(&auth.User{})
 
-	err = gorm.G[Product](db).Create(ctx, &Product{Code: "D42", Price: 100})
-
-	if err != nil {
-		fmt.Fprintln(os.Stderr, "Error on create product", err)
-	}
+	// err = gorm.G[Product](db).Create(ctx, &Product{Code: "D42", Price: 100})
+	// if err != nil {
+	// 	fmt.Fprintln(os.Stderr, "Error on create product", err)
+	// }
 
 	router := gin.Default()
 	api := router.Group("/api")
 	movies.MapMoviesRoutes(api)
+	auth.MapAuthRoutes(api)
 
 	api.GET("/", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
