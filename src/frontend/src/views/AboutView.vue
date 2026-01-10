@@ -1,5 +1,5 @@
-<script setup="ts">
-import { useHelloworld } from '@/components/Helloworld/query';
+<script setup lang="ts">
+import { useHelloworld } from "@/components/Helloworld/query";
 
 const { data } = useHelloworld();
 </script>
