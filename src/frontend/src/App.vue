@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import { RouterLink, RouterView } from 'vue-router';
-import NavigationMenu from '@/components/ui/navigation-menu/NavigationMenu.vue';
+import { RouterLink, RouterView } from "vue-router";
+import NavigationMenu from "@/components/ui/navigation-menu/NavigationMenu.vue";
 import {
   NavigationMenuContent,
   NavigationMenuLink,
   NavigationMenuList,
   NavigationMenuTrigger,
-} from 'reka-ui';
-import NavigationMenuItem from '@/components/ui/navigation-menu/NavigationMenuItem.vue';
-import { Clapperboard, Menu } from 'lucide-vue-next';
-import { VueQueryDevtools } from '@tanstack/vue-query-devtools'
+} from "reka-ui";
+import NavigationMenuItem from "@/components/ui/navigation-menu/NavigationMenuItem.vue";
+import { Clapperboard, Menu } from "lucide-vue-next";
+import { VueQueryDevtools } from "@tanstack/vue-query-devtools";
 </script>
 
 <template>
@@ -32,7 +32,9 @@ import { VueQueryDevtools } from '@tanstack/vue-query-devtools'
         <div class="font-bold">SubCine</div>
       </div>
       <NavigationMenu class="w-full">
-        <NavigationMenuList class="flex space-x-2 justify-between px-8 max-w-none">
+        <NavigationMenuList
+          class="flex space-x-2 justify-between px-8 max-w-none"
+        >
           <NavigationMenuItem>
             <NavigationMenuLink>
               <RouterLink to="/">Threatre</RouterLink>
@@ -56,7 +58,13 @@ import { VueQueryDevtools } from '@tanstack/vue-query-devtools'
         </NavigationMenuList>
       </NavigationMenu>
     </div>
-    <RouterView />
+    <!-- body -->
+    <div class="flex justify-center">
+      <div class="container max-w-6xl">
+        <RouterView />
+      </div>
+    </div>
+    <!-- end body -->
     <VueQueryDevtools />
   </div>
 </template>
