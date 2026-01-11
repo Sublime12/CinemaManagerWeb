@@ -24,6 +24,9 @@ ps:
 db:
 	$(COMPOSE) exec -it db psql -h localhost -U cinema_manager -p 5432
 
+migrate:
+	$(COMPOSE) exec api ./cinema_manager_seeder
+
 rebuild:
 	$(COMPOSE) build --no-cache
 

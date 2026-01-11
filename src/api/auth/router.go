@@ -1,8 +1,10 @@
 package auth
 
 import (
+	"api/core_db"
 	"fmt"
 	"net/http"
+	"os"
 
 	"github.com/gin-gonic/gin"
 )
@@ -25,6 +27,20 @@ func login(c *gin.Context) {
 		return
 	}
 
+	db := core_db.GetSession(c)
+	ctx := c.Request.Context()
+	user, err := GetUserByUsername(ctx, db, loginForm.Username)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "User not found", err)
+		c.AbortWithError(http.StatusUnauthorized, err)
+		return
+	}
+	// fmt.Println("User found", user)
+	if !user.IsPasswordCorrect(loginForm.Password) {
+		fmt.Fprintln(os.Stderr, "Incorrect password ")
+		c.AbortWithStatus(http.StatusUnauthorized)
+		return
+	}
 
 	c.JSON(http.StatusOK, "Success response")
 }
