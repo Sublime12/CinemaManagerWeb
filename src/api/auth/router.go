@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 
+	"github.com/gin-contrib/sessions"
 	"github.com/gin-gonic/gin"
 )
 
@@ -16,7 +17,6 @@ func MapAuthRoutes(router *gin.RouterGroup) {
 
 func login(c *gin.Context) {
 	fmt.Println("In login")
-
 	var loginForm LoginForm
 	err := c.BindJSON(&loginForm)
 	if err != nil {
@@ -35,14 +35,24 @@ func login(c *gin.Context) {
 		c.AbortWithError(http.StatusUnauthorized, err)
 		return
 	}
-	// fmt.Println("User found", user)
+
 	if !user.IsPasswordCorrect(loginForm.Password) {
 		fmt.Fprintln(os.Stderr, "Incorrect password ")
-		c.AbortWithStatus(http.StatusUnauthorized)
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": "Authentification failed",
+		})
+		return
+	}
+	session := sessions.Default(c)
+	session.Set("userId", user.ID)
+	if err := session.Save(); err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
 		return
 	}
 
-	c.JSON(http.StatusOK, "Success response")
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Successfully authentificated user",
+	})
 }
 
 func logout(c *gin.Context) {

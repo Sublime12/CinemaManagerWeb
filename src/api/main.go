@@ -11,33 +11,23 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"api/core_db"
+	"github.com/gin-contrib/sessions"
+	"github.com/gin-contrib/sessions/cookie"
 )
 
 const dns = "host=db user=cinema_manager password=cinema_manager dbname=cinema_manager port=5432 sslmode=disable"
 
-type Product struct {
-	gorm.Model
-	Code  string
-	Price uint
-}
-
 func main() {
-
 	db, err := gorm.Open(postgres.Open(dns), &gorm.Config{})
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Error on initializing db: ", err)
 	}
-	// ctx := context.Background()
 
-	db.AutoMigrate(&auth.User{})
-
-	// err = gorm.G[Product](db).Create(ctx, &Product{Code: "D42", Price: 100})
-	// if err != nil {
-	// 	fmt.Fprintln(os.Stderr, "Error on create product", err)
-	// }
+	store := cookie.NewStore([]byte("secret"))
 
 	router := gin.Default()
 	router.Use(core_db.DBMiddleware(db))
+	router.Use(sessions.Sessions("mysessions", store))
 	api := router.Group("/api")
 	movies.MapMoviesRoutes(api)
 	auth.MapAuthRoutes(api)
