@@ -15,6 +15,8 @@ func MapAuthRoutes(router *gin.RouterGroup) {
 	router.POST("/logout", logout)
 }
 
+const userIdKey = "userId"
+
 func login(c *gin.Context) {
 	fmt.Println("In login")
 	var loginForm LoginForm
@@ -44,7 +46,7 @@ func login(c *gin.Context) {
 		return
 	}
 	session := sessions.Default(c)
-	session.Set("userId", user.ID)
+	session.Set(userIdKey, user.ID)
 	if err := session.Save(); err != nil {
 		c.AbortWithError(http.StatusInternalServerError, err)
 		return
@@ -56,5 +58,18 @@ func login(c *gin.Context) {
 }
 
 func logout(c *gin.Context) {
-	fmt.Println("In logout")
+	session := sessions.Default(c)
+	userId := session.Get(userIdKey)
+	if userId == nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Failed to save session",
+		})
+		return
+	}
+
+	session.Clear()
+	session.Save()
+	c.JSON(http.StatusOK, gin.H {
+		"message": "Successfully logout out",
+	})
 }

@@ -71,7 +71,20 @@ services:
       - "traefik.docker.network=internal"
     networks:
       - internal
-
+  redis:
+    image: redis:8.2.2
+    ports:
+      - 6379:6379
+    volumes:
+      - redisdata:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    networks:
+      - web
+      - internal
   api:
     container_name: cinema_api
     build:
@@ -86,6 +99,8 @@ services:
     depends_on:
       db:
        condition: service_healthy
+      redis:
+        condition: service_healthy
 #      redis:
 #        condition: service_healthy
 #    ports:
@@ -145,6 +160,7 @@ services:
 
 volumes:
   pgdata:
+  redisdata:
 
 networks:
   web:
