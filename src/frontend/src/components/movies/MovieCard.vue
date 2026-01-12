@@ -6,9 +6,9 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import type { Movie } from "@/composables/movies/queries";
-import { toRefs } from "vue";
+} from '@/components/ui/card';
+import type { Movie } from '@/composables/movies/queries';
+import { toRefs } from 'vue';
 
 const props = defineProps<{
   movie: Movie;

@@ -24,7 +24,7 @@ services:
 
       # Attach the static configuration tls.yaml file that contains the tls configuration settings
       - "--providers.file.directory=/dynamic"
-      - "--providers.file.watch=true"
+      - "--providers.file.watch=false"
 
       # Providers
       - "--providers.docker=true"
@@ -115,7 +115,7 @@ services:
       - "traefik.http.routers.api.tls=true"
       - "traefik.docker.network=web"
       - "traefik.http.services.api.loadbalancer.server.port=8080"
-
+      - "traefik.http.routers.api.priority=2"
     develop:
       watch: 
 #        - action: sync 
@@ -151,9 +151,10 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=web"
-      - "traefik.http.routers.frontend.rule=Host(`cinema.localhost`)"
+      - "traefik.http.routers.frontend.rule=Host(`cinema.localhost`) && !PathPrefix(`/api`)"
       - "traefik.http.routers.frontend.entrypoints=websecure"
       - "traefik.http.routers.frontend.tls=true"
+      - "traefik.http.routers.frontend.priority=1"
       - "traefik.http.services.frontend.loadbalancer.server.port=${FRONTEND_INTERNAL_PORT:-5173}"
     networks:
       - web

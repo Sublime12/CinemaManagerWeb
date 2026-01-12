@@ -13,6 +13,10 @@ import (
 func MapAuthRoutes(router *gin.RouterGroup) {
 	router.POST("/login", login)
 	router.POST("/logout", logout)
+
+	authRouter := router.Group("")
+	authRouter.Use(AuthRequired)
+	authRouter.GET("/me", me)
 }
 
 const userIdKey = "userId"
@@ -72,4 +76,22 @@ func logout(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H {
 		"message": "Successfully logout out",
 	})
+}
+
+func me(c *gin.Context) {
+	session := sessions.Default(c)
+	userId := session.Get(userIdKey)
+	c.JSON(http.StatusOK, gin.H{ "user": userId })
+}
+
+func AuthRequired(c *gin.Context) {
+	session := sessions.Default(c)
+	user := session.Get(userIdKey)
+	if user == nil {
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+			"error": "Unauthorized",
+		})
+		return
+	}
+	c.Next()
 }

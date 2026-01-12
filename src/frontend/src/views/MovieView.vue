@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { useGetMovieQuery } from "@/composables/movies/queries";
-import { computed, toRefs, watchEffect } from "vue";
-import ItemGroup from "@/components/ui/item/ItemGroup.vue";
-import { CardTitle } from "@/components/ui/card";
-import moment from "moment";
+import { useGetMovieQuery } from '@/composables/movies/queries';
+import { computed, toRefs, watchEffect } from 'vue';
+import ItemGroup from '@/components/ui/item/ItemGroup.vue';
+import { CardTitle } from '@/components/ui/card';
+import moment from 'moment';
 
 const props = defineProps<{
   id: string;
@@ -13,7 +13,7 @@ const { id } = toRefs(props);
 const { data: movie, isFetching, isError, error } = useGetMovieQuery(id);
 const formattedDate = computed(() => {
   if (!movie.value) return undefined;
-  return moment(movie.value.published_at).format("MMMM D, YYYY");
+  return moment(movie.value.published_at).format('MMMM D, YYYY');
 });
 
 const formattedDuration = computed(() => {
@@ -23,7 +23,7 @@ const formattedDuration = computed(() => {
 
 watchEffect(() => {
   if (error.value) {
-    console.error("Error: ", error.value);
+    console.error('Error: ', error.value);
   }
 });
 </script>
@@ -43,14 +43,14 @@ watchEffect(() => {
     <div class="flex space-x-6">
       <div>
         <img
-          class="rounded-lg border-3 border-gray-300 w-70"
+          class="w-70 rounded-lg border-3 border-gray-300"
           src="@/assets/movie-img-1.webp"
           alt=""
         />
       </div>
       <!-- movie details -->
       <div class="flex flex-col space-y-7">
-        <div class="flex space-x-13 justify-between">
+        <div class="flex justify-between space-x-13">
           <div class="">
             <span class="font-semibold">LENGTH</span><br />
             <span> {{ formattedDuration }} </span>
