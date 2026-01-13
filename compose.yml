@@ -11,8 +11,9 @@ services:
       - ./traefik:/dynamic:ro
       - ./certs:/certs:ro
     networks:
-      - web
-      - internal
+      - cinema_web
+      - cinema_internal
+    profiles: ["dev"]
     command:
       # EntryPoints
       - "--entrypoints.web.address=:80"
@@ -29,7 +30,8 @@ services:
       # Providers
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
-      - "--providers.docker.network=web"
+      - "--providers.docker.network=cinema_web"
+      # - "--providers.docker.network=cinema_web"
 
       # API & Dashboard
       - "--api.dashboard=true"
@@ -42,12 +44,13 @@ services:
     labels:
       # Enable self‑routing
       - "traefik.enable=true"
-      - "traefik.docker.network=web"
+      - "traefik.docker.network=cinema_web"
+      # - "traefik.docker.network=cinema_internal"
 
       # Dashboard router
       - "traefik.http.routers.dashboard.rule=Host(`dashboard.docker.localhost`)"
       - "traefik.http.routers.dashboard.entrypoints=websecure"
-      - "traefik.http.routers.dashboard.service=api@internal"
+      # - "traefik.http.routers.dashboard.service=cinema_api@cinema_web"
       - "traefik.http.routers.dashboard.tls=true"
 
   db:
@@ -67,11 +70,13 @@ services:
       interval: 5s
       timeout: 3s
       retries: 10
+    profiles: ["dev"]
     labels:
-      - "traefik.docker.network=internal"
+      - "traefik.docker.network=cinema_internal"
     networks:
-      - internal
+      - cinema_internal
   redis:
+    profiles: ["dev"]
     image: redis:8.2.2
     ports:
       - 6379:6379
@@ -83,9 +88,10 @@ services:
       timeout: 3s
       retries: 10
     networks:
-      - web
-      - internal
+#      - cinema_web
+      - cinema_internal
   api:
+    profiles: ["dev"]
     container_name: cinema_api
     build:
       context: ./src/api
@@ -113,23 +119,19 @@ services:
       - "traefik.http.routers.api.rule=Host(`cinema.localhost`) && PathPrefix(`/api`)"
       - "traefik.http.routers.api.entrypoints=websecure"
       - "traefik.http.routers.api.tls=true"
-      - "traefik.docker.network=web"
+      - "traefik.docker.network=cinema_web"
+      # - "traefik.docker.network=cinema_internal"
       - "traefik.http.services.api.loadbalancer.server.port=8080"
       - "traefik.http.routers.api.priority=2"
     develop:
-      watch: 
-#        - action: sync 
-#          path: ./src/api/
-#          target: /app
-#          initial_sync: true
-
+      watch:
         - action: rebuild
           path: ./src/api
-          
     networks:
-      - web
-      - internal
+      - cinema_web
+      - cinema_internal
   frontend:
+    profiles: ["dev"]
     container_name: cinema_frontend
     build:
       context: ./src/frontend
@@ -150,21 +152,65 @@ services:
       - "${FRONTEND_PORT:-5173}:${FRONTEND_INTERNAL_PORT:-5173}"
     labels:
       - "traefik.enable=true"
-      - "traefik.docker.network=web"
+      - "traefik.docker.network=cinema_web"
+      # - "traefik.docker.network=cinema_internal"
       - "traefik.http.routers.frontend.rule=Host(`cinema.localhost`) && !PathPrefix(`/api`)"
       - "traefik.http.routers.frontend.entrypoints=websecure"
       - "traefik.http.routers.frontend.tls=true"
       - "traefik.http.routers.frontend.priority=1"
       - "traefik.http.services.frontend.loadbalancer.server.port=${FRONTEND_INTERNAL_PORT:-5173}"
     networks:
-      - web
-
+      - cinema_web
+      - cinema_internal
+  db-test:
+    tmpfs:
+      - /var/lib/postgresql
+    profiles: ["test"]
+    image: postgres:18
+    environment:
+      POSTGRES_DB: cinema_manager
+      POSTGRES_USER: cinema_manager
+      POSTGRES_PASSWORD: cinema_manager
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U cinema_manager -d cinema_manager"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    networks:
+      - cinema_internal
+  redis-test:
+    profiles: ["test"]
+    image: redis:8.2.2
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    networks:
+      - cinema_internal
+  api-test:
+    profiles: ["test"]
+    build:
+      context: ./src/api
+      dockerfile: Dockerfile
+      target: test
+    depends_on:
+      db-test:
+        condition: service_healthy
+      redis-test:
+        condition: service_healthy
+    environment:
+      TEST_DB_DSN: host=db-test user=cinema_manager password=cinema_manager dbname=cinema_manager port=5432 sslmode=disable
+      TEST_REDIS_DSN: redis-test:6379
+    networks:
+      - cinema_internal
 volumes:
   pgdata:
   redisdata:
 
 networks:
-  web:
-    name: web
-  internal:
+  cinema_web:
+    name: cinema_web
+  cinema_internal:
+    name: cinema_internal
     internal: true

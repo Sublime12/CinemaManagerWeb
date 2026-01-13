@@ -22,7 +22,6 @@ func MapAuthRoutes(router *gin.RouterGroup) {
 const userIdKey = "userId"
 
 func login(c *gin.Context) {
-	fmt.Println("In login")
 	var loginForm LoginForm
 	err := c.BindJSON(&loginForm)
 	if err != nil {

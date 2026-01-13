@@ -17,9 +17,21 @@ RUN --mount=type=cache,target=/root/.cache/go-build \
 RUN --mount=type=cache,target=/root/.cache/go-build \
     go build -o cinema_manager_seeder ./seeds
 
-FROM alpine:latest
+FROM golang:1.25.5-alpine3.23 AS test
 
-# RUN apk update && apk add ca-certificates && rm -rf /var/cache/apk/*
+RUN apk update && apk add alpine-sdk git && rm -rf /var/cache/apk
+
+WORKDIR /app
+
+COPY go.mod .
+COPY go.sum .
+RUN go mod download
+
+COPY . .
+
+CMD ["go", "test", "./...", "-v"]
+
+FROM alpine:latest
 
 RUN mkdir -p /app
 WORKDIR /app
