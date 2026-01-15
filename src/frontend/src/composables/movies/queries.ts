@@ -8,7 +8,7 @@ const MovieSchema = z.object({
   id: z.number(),
   name: z.string(),
   description: z.string(),
-  published_at: z.coerce.date<string>(),
+  published_at: z.coerce.date(),
   length: z
     .number()
     .int()

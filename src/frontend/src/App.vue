@@ -10,6 +10,8 @@ import {
 import NavigationMenuItem from '@/components/ui/navigation-menu/NavigationMenuItem.vue';
 import { Clapperboard, Menu } from 'lucide-vue-next';
 import { VueQueryDevtools } from '@tanstack/vue-query-devtools';
+import { Toaster } from 'vue-sonner';
+import { ROUTE_NAME } from './router';
 </script>
 
 <template>
@@ -22,6 +24,7 @@ import { VueQueryDevtools } from '@tanstack/vue-query-devtools';
   <!-- </header> -->
 
   <div class="px-8">
+    <Toaster />
     <div class="sticky top-0 flex items-center justify-between bg-white py-6">
       <div class="flex space-x-2">
         <Menu />
@@ -35,17 +38,7 @@ import { VueQueryDevtools } from '@tanstack/vue-query-devtools';
         <NavigationMenuList class="flex max-w-none justify-between space-x-2 px-8">
           <NavigationMenuItem>
             <NavigationMenuLink>
-              <RouterLink to="/">Threatre</RouterLink>
-            </NavigationMenuLink>
-          </NavigationMenuItem>
-          <NavigationMenuLink>
-            <RouterLink to="/">Search</RouterLink>
-          </NavigationMenuLink>
-
-          <NavigationMenuItem> </NavigationMenuItem>
-          <NavigationMenuItem>
-            <NavigationMenuLink>
-              <RouterLink to="/">Search</RouterLink>
+              <RouterLink :to="{ name: ROUTE_NAME.LOGIN }">login</RouterLink>
             </NavigationMenuLink>
           </NavigationMenuItem>
           <NavigationMenuItem>
