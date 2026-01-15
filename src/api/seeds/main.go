@@ -16,5 +16,5 @@ func main() {
 		fmt.Fprintln(os.Stderr, "Error on initializing db: ", err)
 	}
 	db.AutoMigrate(&auth.User{})
-	seed_users(db)
+	SeedUsers(db)
 }

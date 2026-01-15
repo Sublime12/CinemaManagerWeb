@@ -16,6 +16,11 @@ test:
 	$(COMPOSE) --profile test build api-test
 	$(COMPOSE) --profile test run --rm api-test
 
+# test:
+# 	$(COMPOSE) --profile test up \
+# 		--build \
+# 		--abort-on-container-exit \
+# 		--exit-code-from api-test
 test-clean:
 	$(COMPOSE) --profile test down -v
 
