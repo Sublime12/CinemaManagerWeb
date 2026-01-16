@@ -5,9 +5,12 @@ import { NavigationMenuList } from './ui/navigation-menu';
 import { NavigationMenu } from './ui/navigation-menu';
 import { NavigationMenuItem } from './ui/navigation-menu';
 import { NavigationMenuLink } from './ui/navigation-menu';
+import { Clapperboard } from 'lucide-vue-next';
+import { Menu } from 'lucide-vue-next';
 
 const links = reactive([
   { name: 'Login', route: ROUTE_NAME.LOGIN, sortOrder: 1 },
+  { name: 'Logout', route: ROUTE_NAME.LOGOUT, sortOrder: 1 },
   { name: 'Home', route: ROUTE_NAME.HOME, sortOrder: 1 },
 ]);
 </script>

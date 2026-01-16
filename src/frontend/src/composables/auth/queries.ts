@@ -29,3 +29,12 @@ export function useLoginMutation() {
     },
   });
 }
+
+export function useLogoutMutation() {
+  return useMutation({
+    mutationKey: ['logout'],
+    mutationFn: async () => {
+      await api.post(`/logout`);
+    },
+  });
+}

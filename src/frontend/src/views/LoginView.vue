@@ -10,7 +10,7 @@ import { Input } from '@/components/ui/input';
 
 import { h } from 'vue';
 import { LoginFormSchema, useLoginMutation } from '@/composables/auth/queries';
-import router, { ROUTE_NAME as ROUTENAME } from '@/router';
+import router, { ROUTE_NAME } from '@/router';
 
 const formSchema = toTypedSchema(LoginFormSchema);
 
@@ -22,7 +22,7 @@ const { handleSubmit, resetForm } = useForm({
   },
 });
 
-const { mutateAsync } = useLoginMutation();
+const { mutateAsync, isError } = useLoginMutation();
 
 const onSubmit = handleSubmit(async (data) => {
   const response = await mutateAsync(data);
@@ -42,7 +42,7 @@ const onSubmit = handleSubmit(async (data) => {
   });
 
   router.push({
-    name: ROUTENAME.HOME,
+    name: ROUTE_NAME.HOME,
   });
 });
 </script>
