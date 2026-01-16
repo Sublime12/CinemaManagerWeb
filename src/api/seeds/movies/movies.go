@@ -23,6 +23,9 @@ func loadJSON[T any](path string, target *[]T) error {
 
 func SeedMovies(db *gorm.DB) error {
 	ctx := context.Background()
+
+	db.Migrator().DropTable(&m.Movie{})
+	db.Migrator().DropTable(&m.Theatre{})
 	db.AutoMigrate(&m.Movie{})
 	db.AutoMigrate(&m.Theatre{})
 
@@ -45,6 +48,8 @@ func SeedMovies(db *gorm.DB) error {
 			return err
 		}
 	}
+	fmt.Fprintln(os.Stderr, "movies created")
+
 	for _, theatre:= range threatres {
 		err := gorm.G[m.Theatre](db).Create(ctx, &theatre)
 		if err != nil {
@@ -52,6 +57,7 @@ func SeedMovies(db *gorm.DB) error {
 			return err
 		}
 	}
+	fmt.Fprintln(os.Stderr, "theatre created")
 
 	return nil
 }

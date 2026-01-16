@@ -2,7 +2,7 @@ package movies
 
 import (
 	"time"
-
+	"github.com/lib/pq"
 	"gorm.io/gorm"
 )
 
@@ -12,7 +12,8 @@ type Movie struct {
 	PublishedAt time.Time `json:"published_at" binding:"required"` 
 	Length time.Duration `json:"length" binding:"required"`
 	Language string `json:"language" binding:"required"`
-	Genres []string `json:"genres" binding:"required"`
+	// Genres []string `json:"genres" binding:"required"`
+	Genres pq.StringArray `json:"genres" gorm:"type:text[]" binding:"required"`
 	gorm.Model
 }
 

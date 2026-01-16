@@ -38,6 +38,9 @@ WORKDIR /app
 COPY --from=builder /app/cinema_manager_api .
 COPY --from=builder /app/cinema_manager_seeder .
 
+COPY --from=builder /app/seeds/movies/movies.json /app/movies.json
+COPY --from=builder /app/seeds/movies/threatres.json /app/threatres.json
+
 EXPOSE 8080
 
 ENTRYPOINT ["./cinema_manager_api"]
