@@ -1,4 +1,4 @@
-<script setup="ts"></script>
+<script setup lang="ts"></script>
 
 <template>
   <div>Title</div>

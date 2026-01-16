@@ -15,7 +15,7 @@ watchEffect(() => {
     <div v-if="isFetching">Loading movies...</div>
     <div v-if="isError">Error while loading movies...</div>
     <div v-else class="flex flex-wrap space-y-10 space-x-4">
-      <div v-for="m in movies">
+      <div v-for="m in movies" :key="m.id">
         <MovieCard :movie="m" />
       </div>
     </div>
