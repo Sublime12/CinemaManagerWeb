@@ -1,9 +1,9 @@
 package main
 
 import (
+	"api/core_router"
 	"fmt"
 	"os"
-	"api/core_router"
 )
 
 const dns = "host=db user=cinema_manager password=cinema_manager dbname=cinema_manager port=5432 sslmode=disable"
@@ -19,5 +19,3 @@ func main() {
 
 	router.Run(":8080")
 }
-
-

@@ -1,36 +1,17 @@
 package movies
 
 import (
+	"api/core_db"
 	"errors"
-	"fmt"
 	"net/http"
 	"strconv"
-	"time"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
-var movies []Movie
-
-var movieDescription string = `Jake and Neytiri's family grapples with 
-	grief after Neteyam's death, encountering a new, aggressive 
-	Na'vi tribe, the Ash People, who are led 
-	by the fiery Varang, as the conflict on Pandora escalates and a
-	new moral focus emerges.`
 
 func MapMoviesRoutes(api *gin.RouterGroup) {
-	movies = make([]Movie, 0)
-	for i := 0; i < 15; i++ {
-		movie := NewMovie(i, 
-			fmt.Sprintf("Avatar: Fire and Ash %dII", i), 
-			movieDescription,
-			time.Now(),
-			time.Hour * 2 + (time.Minute * 17),
-			"English",
-			[]string {"Action", "Adventure", "Fiction"},
-		)
-		movies = append(movies, movie)
-	}
 	router := api.Group("/movies")	
 	router.GET("", getMovies)
 	router.GET("/:id", getMovie)
@@ -38,7 +19,19 @@ func MapMoviesRoutes(api *gin.RouterGroup) {
 
 
 func getMovies(c *gin.Context) {
-	c.JSON(http.StatusOK, movies)
+	ctx := c.Request.Context()
+	db := core_db.GetSession(c)
+	movies, err := gorm.G[Movie](db).Find(ctx)
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+		return
+	}
+
+	moviesResponse := make([]MovieResponse, 0)
+	for _, m := range movies {
+		moviesResponse = append(moviesResponse, MovieResponseFrom(m))
+	}
+	c.JSON(http.StatusOK, moviesResponse)
 }
 
 func getMovie(c *gin.Context) {
@@ -48,13 +41,18 @@ func getMovie(c *gin.Context) {
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
-	var movie *Movie = nil
-	for _, m := range movies {
-		if m.ID == id { movie = &m }
-	}
-	if movie == nil {
+
+	ctx := c.Request.Context()
+	db := core_db.GetSession(c)
+	movie, err := gorm.G[Movie](db).Where("id = ?", id).First(ctx)
+	if errors.Is(err, gorm.ErrRecordNotFound) {
 		c.AbortWithError(http.StatusNotFound, errors.New("movie not found"))
 		return
 	}
-	c.JSON(http.StatusOK, *movie)
+	if err != nil {
+		c.AbortWithError(http.StatusInternalServerError, err)
+	}
+
+
+	c.JSON(http.StatusOK, MovieResponseFrom(movie))
 }
