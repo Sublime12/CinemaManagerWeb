@@ -2,32 +2,25 @@ package movies
 
 import "time"
 
-type Movie struct {
-	Id int `json:"id"`
-	Name string `json:"name" binding:"required"`
-	Description string `json:"description" binding:"required"`	
-	PublishedAt time.Time `json:"published_at" binding:"required"` 
-	Length time.Duration `json:"length" binding:"required"`
-	Language string `json:"language" binding:"required"`
-	Genres []string `json:"genres" binding:"required"`
+
+type MovieResponse struct {
+	ID          uint           `json:"id" binding:"required"`
+	Name        string         `json:"name" binding:"required,min=1"`
+	Description string         `json:"description" binding:"required,min=10"`
+	PublishedAt time.Time      `json:"published_at" binding:"required"`
+	Length      time.Duration  `json:"length" binding:"required,gt=0"` // keep as time.Duration
+	Language    string         `json:"language" binding:"required,min=2"`
+	Genres      []string       `json:"genres" binding:"required,dive,required"`
 }
 
-func NewMovie(
-	Id int, 
-	Name string, 
-	Description string,
-	PublishedAt	time.Time,
-	Length time.Duration, 
-	Language string,
-	Genres []string,
-) Movie {
-	return Movie{
-		Id: Id,
-		Name: Name,
-		Description: Description,
-		PublishedAt: PublishedAt,
-		Length: Length,
-		Language: Language,
-		Genres: Genres,
+func MovieResponseFrom(m Movie) MovieResponse {
+	return MovieResponse{
+		ID:          m.ID,
+		Name:        m.Name,
+		Description: m.Description,
+		PublishedAt: m.PublishedAt,
+		Length:      m.Length,
+		Language:    m.Language,
+		Genres:      []string(m.Genres),
 	}
 }

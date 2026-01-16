@@ -1,14 +1,14 @@
-import { api } from "@/api";
-import { useQuery } from "@tanstack/vue-query";
-import moment from "moment";
-import type { Ref } from "vue";
-import z from "zod";
+import { api } from '@/api';
+import { useQuery } from '@tanstack/vue-query';
+import moment from 'moment';
+import type { Ref } from 'vue';
+import z from 'zod';
 
 const MovieSchema = z.object({
   id: z.number(),
   name: z.string(),
   description: z.string(),
-  published_at: z.coerce.date<string>(),
+  published_at: z.coerce.date(),
   length: z
     .number()
     .int()
@@ -24,7 +24,7 @@ export type Movie = z.infer<typeof MovieSchema>;
 
 export function useGetMoviesQuery() {
   return useQuery({
-    queryKey: ["get-movies"],
+    queryKey: ['get-movies'],
     queryFn: async () => {
       const response = await api.get<Movie[]>(`/movies`);
 
@@ -35,11 +35,11 @@ export function useGetMoviesQuery() {
 
 export function useGetMovieQuery(id: Ref<string>) {
   return useQuery({
-    queryKey: ["get-movie", id.value],
+    queryKey: ['get-movie', id.value],
     queryFn: async () => {
       const response = await api.get<Movie>(`/movies/${id.value}`);
 
-      console.log("movie data: ", response.data);
+      console.log('movie data: ', response.data);
       return MovieSchema.parse(response.data);
     },
   });

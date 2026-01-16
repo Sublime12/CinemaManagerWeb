@@ -14,15 +14,32 @@ COPY . /app
 
 RUN --mount=type=cache,target=/root/.cache/go-build \
     go build -o cinema_manager_api
-# RUN go build -o ./cinema_manager_api
+RUN --mount=type=cache,target=/root/.cache/go-build \
+    go build -o cinema_manager_seeder ./seeds
+
+FROM golang:1.25.5-alpine3.23 AS test
+
+RUN apk update && apk add alpine-sdk git && rm -rf /var/cache/apk
+
+WORKDIR /app
+
+COPY go.mod .
+COPY go.sum .
+RUN go mod download
+
+COPY . .
+
+CMD ["go", "test", "./...", "-v"]
 
 FROM alpine:latest
-
-# RUN apk update && apk add ca-certificates && rm -rf /var/cache/apk/*
 
 RUN mkdir -p /app
 WORKDIR /app
 COPY --from=builder /app/cinema_manager_api .
+COPY --from=builder /app/cinema_manager_seeder .
+
+COPY --from=builder /app/seeds/movies/movies.json /app/movies.json
+COPY --from=builder /app/seeds/movies/threatres.json /app/threatres.json
 
 EXPOSE 8080
 

@@ -7,10 +7,22 @@ watch:
 	$(COMPOSE) --profile dev up --build --watch
 
 down:
-	$(COMPOSE) down
+	$(COMPOSE) --profile dev down
 
 down-v:
 	$(COMPOSE) down -v
+
+test:
+	$(COMPOSE) --profile test build api-test
+	$(COMPOSE) --profile test run --rm api-test
+
+# test:
+# 	$(COMPOSE) --profile test up \
+# 		--build \
+# 		--abort-on-container-exit \
+# 		--exit-code-from api-test
+test-clean:
+	$(COMPOSE) --profile test down -v
 
 restart:
 	$(COMPOSE) down && $(COMPOSE) --profile dev up -d
@@ -24,11 +36,14 @@ ps:
 db:
 	$(COMPOSE) exec -it db psql -h localhost -U cinema_manager -p 5432
 
+migrate:
+	$(COMPOSE) exec api ./cinema_manager_seeder
+
 rebuild:
-	$(COMPOSE) build --no-cache
+	$(COMPOSE) --profile dev build --no-cache
 
 clean:
-	$(COMPOSE) down -v
+	$(COMPOSE) --profile dev down -v
 
 certs-install:
 	script/install-local-certs.sh

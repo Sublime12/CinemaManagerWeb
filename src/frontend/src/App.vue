@@ -1,15 +1,17 @@
 <script setup lang="ts">
-import { RouterLink, RouterView } from "vue-router";
-import NavigationMenu from "@/components/ui/navigation-menu/NavigationMenu.vue";
+import { RouterLink, RouterView } from 'vue-router';
+import NavigationMenu from '@/components/ui/navigation-menu/NavigationMenu.vue';
 import {
   NavigationMenuContent,
   NavigationMenuLink,
   NavigationMenuList,
   NavigationMenuTrigger,
-} from "reka-ui";
-import NavigationMenuItem from "@/components/ui/navigation-menu/NavigationMenuItem.vue";
-import { Clapperboard, Menu } from "lucide-vue-next";
-import { VueQueryDevtools } from "@tanstack/vue-query-devtools";
+} from 'reka-ui';
+import NavigationMenuItem from '@/components/ui/navigation-menu/NavigationMenuItem.vue';
+import { Clapperboard, Menu } from 'lucide-vue-next';
+import { VueQueryDevtools } from '@tanstack/vue-query-devtools';
+import { Toaster } from 'vue-sonner';
+import { ROUTE_NAME } from './router';
 </script>
 
 <template>
@@ -22,7 +24,8 @@ import { VueQueryDevtools } from "@tanstack/vue-query-devtools";
   <!-- </header> -->
 
   <div class="px-8">
-    <div class="flex justify-between items-center py-6 sticky top-0 bg-white">
+    <Toaster />
+    <div class="sticky top-0 flex items-center justify-between bg-white py-6">
       <div class="flex space-x-2">
         <Menu />
         <span> Menu</span>
@@ -32,22 +35,10 @@ import { VueQueryDevtools } from "@tanstack/vue-query-devtools";
         <div class="font-bold">SubCine</div>
       </div>
       <NavigationMenu class="w-full">
-        <NavigationMenuList
-          class="flex space-x-2 justify-between px-8 max-w-none"
-        >
+        <NavigationMenuList class="flex max-w-none justify-between space-x-2 px-8">
           <NavigationMenuItem>
             <NavigationMenuLink>
-              <RouterLink to="/">Threatre</RouterLink>
-            </NavigationMenuLink>
-          </NavigationMenuItem>
-          <NavigationMenuLink>
-            <RouterLink to="/">Search</RouterLink>
-          </NavigationMenuLink>
-
-          <NavigationMenuItem> </NavigationMenuItem>
-          <NavigationMenuItem>
-            <NavigationMenuLink>
-              <RouterLink to="/">Search</RouterLink>
+              <RouterLink :to="{ name: ROUTE_NAME.LOGIN }">login</RouterLink>
             </NavigationMenuLink>
           </NavigationMenuItem>
           <NavigationMenuItem>
@@ -60,7 +51,7 @@ import { VueQueryDevtools } from "@tanstack/vue-query-devtools";
     </div>
     <!-- body -->
     <div class="flex justify-center">
-      <div class="container max-w-6xl">
+      <div class="container max-w-7xl">
         <RouterView />
       </div>
     </div>
