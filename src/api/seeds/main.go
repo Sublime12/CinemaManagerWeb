@@ -1,7 +1,8 @@
 package main
 
 import (
-	"api/auth"
+	auth_seeder "api/seeds/auth"
+	movies_seeder "api/seeds/movies"
 	"fmt"
 	"os"
 
@@ -15,6 +16,6 @@ func main() {
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Error on initializing db: ", err)
 	}
-	db.AutoMigrate(&auth.User{})
-	SeedUsers(db)
+	auth_seeder.SeedUsers(db)
+	movies_seeder.SeedMovies(db)
 }

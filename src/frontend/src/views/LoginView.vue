@@ -38,20 +38,22 @@ const { handleSubmit, resetForm } = useForm({
 const { mutateAsync } = useLoginMutation();
 
 const onSubmit = handleSubmit(async (data) => {
-  //  toast('You submitted the following values:', {
-  //    description: h(
-  //      'pre',
-  //      { class: 'bg-code text-code-foreground mt-2 w-[320px] overflow-x-auto rounded-md p-4' },
-  //      h('code', JSON.stringify(data, null, 2)),
-  //    ),
-  //    position: 'bottom-right',
-  //    class: 'flex flex-col gap-2',
-  //    style: {
-  //      '--border-radius': 'calc(var(--radius)  + 4px)',
-  //    },
-  //  });
   const response = await mutateAsync(data);
-  toast(response.message);
+  // toast(response.message);
+
+  toast('', {
+    description: h(
+      'pre',
+      { class: 'bg-code text-code-foreground mt-2 w-[320px] overflow-x-auto rounded-md p-4' },
+      h('code', response.message),
+    ),
+    position: 'bottom-right',
+    class: 'flex flex-col gap-2',
+    style: {
+      '--border-radius': 'calc(var(--radius)  + 4px)',
+    },
+  });
+
   router.push({
     name: ROUTE_NAME.HOME,
   });

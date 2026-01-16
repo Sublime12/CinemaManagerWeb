@@ -42,14 +42,15 @@ func getMovies(c *gin.Context) {
 }
 
 func getMovie(c *gin.Context) {
-	id, err := strconv.Atoi(c.Param("id"))
+	idInt, err := strconv.Atoi(c.Param("id"))
+	id := uint(idInt)
 	if err != nil {
 		c.AbortWithError(http.StatusBadRequest, err)
 		return
 	}
 	var movie *Movie = nil
 	for _, m := range movies {
-		if m.Id == id { movie = &m }
+		if m.ID == id { movie = &m }
 	}
 	if movie == nil {
 		c.AbortWithError(http.StatusNotFound, errors.New("movie not found"))

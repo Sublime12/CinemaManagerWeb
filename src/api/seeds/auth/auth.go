@@ -12,6 +12,7 @@ import (
 // const dns = "host=db user=cinema_manager password=cinema_manager dbname=cinema_manager port=5432 sslmode=disable"
 
 func SeedUsers(db *gorm.DB) {
+	db.AutoMigrate(&auth.User{})
 	ctx := context.Background()
 
 	password, err := auth.HashPassword("password")

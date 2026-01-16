@@ -1,0 +1,37 @@
+[
+  {
+    "id": 1,
+    "name": "Grand Cinema",
+    "description": "A large modern theatre located in the heart of downtown, featuring multiple screens, premium seating, and state-of-the-art sound systems. It regularly hosts major international releases and special film events.",
+    "city": "Toronto",
+    "address": "123 Queen Street West"
+  },
+  {
+    "id": 2,
+    "name": "Indie Plex",
+    "description": "A cozy independent cinema known for showcasing foreign films, documentaries, and local productions. It attracts a loyal community of film enthusiasts and supports emerging filmmakers.",
+    "city": "Montreal",
+    "address": "456 Rue Sainte-Catherine"
+  },
+  {
+    "id": 3,
+    "name": "Lakeside Screens",
+    "description": "Situated near the waterfront, this theatre offers a relaxed movie-going experience with scenic views before and after screenings. It is a popular destination for families and weekend audiences.",
+    "city": "Vancouver",
+    "address": "89 Harbour Avenue"
+  },
+  {
+    "id": 4,
+    "name": "Capitol Theatre",
+    "description": "A historic theatre that blends classic architecture with modern projection technology. Known for hosting film festivals, premieres, and special retrospectives.",
+    "city": "Ottawa",
+    "address": "12 Elgin Street"
+  },
+  {
+    "id": 5,
+    "name": "Northern Lights Cinema",
+    "description": "A regional cinema serving local communities with a mix of mainstream blockbusters and independent films. It emphasizes accessibility, comfort, and community engagement.",
+    "city": "Quebec City",
+    "address": "77 Boulevard René-Lévesque"
+  }
+]
