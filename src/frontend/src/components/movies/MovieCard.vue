@@ -5,6 +5,7 @@ import { toRefs } from 'vue';
 
 const props = defineProps<{
   movie: Movie;
+  isAdmin?: false;
 }>();
 
 const { movie } = toRefs(props);

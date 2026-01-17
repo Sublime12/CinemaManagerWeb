@@ -9,7 +9,7 @@ import Navbar from '@/components/Navbar.vue';
 <template>
   <div class="px-8">
     <Navbar />
-    <Toaster class="w-full"/>
+    <Toaster class="w-full" />
     <!-- body -->
     <div class="flex justify-center">
       <div class="container max-w-7xl">

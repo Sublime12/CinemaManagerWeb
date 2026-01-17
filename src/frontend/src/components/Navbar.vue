@@ -11,31 +11,32 @@ import { Menu } from 'lucide-vue-next';
 const links = reactive([
   { name: 'Login', route: ROUTE_NAME.LOGIN, sortOrder: 1 },
   { name: 'Logout', route: ROUTE_NAME.LOGOUT, sortOrder: 1 },
+  { name: 'Admin', route: ROUTE_NAME.ADMIN, sortOrder: 1 },
   { name: 'Home', route: ROUTE_NAME.HOME, sortOrder: 1 },
 ]);
 </script>
 
 <template>
-<div class="sticky top-0 flex items-center justify-between bg-white py-6">
-  <div class="flex space-x-2">
-    <Menu />
-    <span> Menu</span>
+  <div class="sticky top-0 flex items-center justify-between bg-white py-6">
+    <div class="flex space-x-2">
+      <Menu />
+      <span> Menu</span>
+    </div>
+    <div class="flex flex-col items-center">
+      <Clapperboard />
+      <div class="font-bold">SubCine</div>
+    </div>
+    <NavigationMenu class="w-full">
+      <NavigationMenuList class="flex max-w-none justify-between space-x-2 px-8">
+        <NavigationMenuItem
+          v-for="link in links"
+          class="rounded hover:border hover:border-gray-300 hover:font-semibold hover:text-white"
+        >
+          <NavigationMenuLink>
+            <RouterLink :to="{ name: link.route }">{{ link.name }}</RouterLink>
+          </NavigationMenuLink>
+        </NavigationMenuItem>
+      </NavigationMenuList>
+    </NavigationMenu>
   </div>
-  <div class="flex flex-col items-center">
-    <Clapperboard />
-    <div class="font-bold">SubCine</div>
-  </div>
-  <NavigationMenu class="w-full">
-    <NavigationMenuList class="flex max-w-none justify-between space-x-2 px-8">
-      <NavigationMenuItem
-        v-for="link in links"
-        class="hover:text-white rounded hover:font-semibold hover:border hover:border-gray-300"
-      >
-        <NavigationMenuLink>
-          <RouterLink :to="{ name: link.route }">{{ link.name }}</RouterLink>
-        </NavigationMenuLink>
-      </NavigationMenuItem>
-    </NavigationMenuList>
-  </NavigationMenu>
-</div>
 </template>

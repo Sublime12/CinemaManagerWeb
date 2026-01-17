@@ -2,8 +2,9 @@ import { createRouter, createWebHistory } from 'vue-router';
 import AboutView from '@/views/AboutView.vue';
 import MovieView from '@/views/MovieView.vue';
 import MoviesView from '@/views/MoviesView.vue';
-import LoginView from './views/LoginView.vue';
-import LogoutView from './views/LogoutView.vue';
+import LoginView from '@/views/LoginView.vue';
+import LogoutView from '@/views/LogoutView.vue';
+import AdminView from '@/views/AdminView.vue';
 
 export enum ROUTE_NAME {
   HOME = 'home',
@@ -12,6 +13,7 @@ export enum ROUTE_NAME {
   MOVIE = 'movie',
   LOGIN = 'login',
   LOGOUT = 'logout',
+  ADMIN = 'admin',
 }
 
 const router = createRouter({
@@ -47,6 +49,11 @@ const router = createRouter({
       path: '/logout',
       name: ROUTE_NAME.LOGOUT,
       component: LogoutView,
+    },
+    {
+      path: '/admin',
+      name: ROUTE_NAME.ADMIN,
+      component: AdminView,
     },
   ],
 });
