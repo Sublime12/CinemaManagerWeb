@@ -67,7 +67,7 @@ watchEffect(() => {
         <div>
           <span class="font-semibold">GENRE</span><br />
           <div class="space-x-2">
-            <span v-for="genre in movie.genres"> {{ genre }}, </span>
+            <span v-for="genre in movie.genres" :key="genre"> {{ genre }}, </span>
           </div>
         </div>
       </div>

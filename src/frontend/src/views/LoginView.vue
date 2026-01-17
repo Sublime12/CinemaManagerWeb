@@ -2,25 +2,12 @@
 import { toTypedSchema } from '@vee-validate/zod';
 import { useForm, Field as VeeField } from 'vee-validate';
 import { toast } from 'vue-sonner';
-import { z } from 'zod';
 
 import { Button } from '@/components/ui/button';
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card';
-import { Field, FieldDescription, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
-import {
-  InputGroup,
-  InputGroupAddon,
-  InputGroupText,
-  InputGroupTextarea,
-} from '@/components/ui/input-group';
+
 import { h } from 'vue';
 import { LoginFormSchema, useLoginMutation } from '@/composables/auth/queries';
 import router, { ROUTE_NAME } from '@/router';
@@ -35,7 +22,7 @@ const { handleSubmit, resetForm } = useForm({
   },
 });
 
-const { mutateAsync } = useLoginMutation();
+const { mutateAsync, isError } = useLoginMutation();
 
 const onSubmit = handleSubmit(async (data) => {
   const response = await mutateAsync(data);
@@ -44,7 +31,7 @@ const onSubmit = handleSubmit(async (data) => {
   toast('', {
     description: h(
       'pre',
-      { class: 'bg-code text-code-foreground mt-2 w-[320px] overflow-x-auto rounded-md p-4' },
+      { class: 'bg-code text-code-foreground mt-2 overflow-x-auto rounded-md p-4' },
       h('code', response.message),
     ),
     position: 'bottom-right',
