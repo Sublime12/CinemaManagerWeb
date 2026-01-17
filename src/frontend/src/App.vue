@@ -12,7 +12,7 @@ import Navbar from '@/components/Navbar.vue';
     <Toaster class="w-full" />
     <!-- body -->
     <div class="flex justify-center">
-      <div class="container max-w-7xl">
+      <div class="container w-full">
         <RouterView />
       </div>
     </div>

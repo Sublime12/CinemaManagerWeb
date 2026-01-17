@@ -86,7 +86,7 @@ const theatresSelected = computed(() => selectedPanel.value == ADMIN_PANEL.THEAT
       <SidebarFooter />
       <SidebarRail />
     </Sidebar>
-    <SidebarInset>
+    <SidebarInset class="w-full max-w-none">
       <header
         class="flex h-16 shrink-0 items-center justify-between gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12"
       >
@@ -97,11 +97,11 @@ const theatresSelected = computed(() => selectedPanel.value == ADMIN_PANEL.THEAT
           <CreateMovieDialog />
         </div>
       </header>
-      <div class="flex flex-1 flex-col gap-4 bg-red-100 p-4 pt-0">
+      <div class="flex flex-1 flex-col gap-4 p-4 pt-0">
         <div class="bg-muted/50 min-h-screen flex-1 rounded-xl md:min-h-min">
           <div
             v-if="selectedPanel == ADMIN_PANEL.MOVIES"
-            class="flex flex-row flex-wrap space-y-2 space-x-4"
+            class="flex flex-row flex-wrap justify-around space-y-2 space-x-4"
           >
             <div v-for="movie in movies">
               <MovieCard :key="movie.id" :movie="movie" />

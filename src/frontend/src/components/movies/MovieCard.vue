@@ -13,24 +13,15 @@ const { movie } = toRefs(props);
 
 <template>
   <Card class="w-72">
-    <RouterLink
-      :to="{
-        name: 'movie',
-        params: {
-          id: movie.id,
-        },
-      }"
-    >
-      <CardHeader>
-        <CardTitle>{{ movie.name }} </CardTitle>
-        <!-- <CardDescription>{{ movie.description }}</CardDescription> -->
-      </CardHeader>
-      <CardContent>
-        <img class="rounded-lg" src="@/assets/movie-img-1.webp" alt="Movie a" />
-      </CardContent>
-      <CardFooter>
-        <p>Watch trailer</p>
-      </CardFooter>
-    </RouterLink>
+    <CardHeader>
+      <CardTitle>{{ movie.name }} </CardTitle>
+      <!-- <CardDescription>{{ movie.description }}</CardDescription> -->
+    </CardHeader>
+    <CardContent>
+      <img class="rounded-lg" src="@/assets/movie-img-1.webp" alt="Movie a" />
+    </CardContent>
+    <CardFooter>
+      <p>Watch trailer</p>
+    </CardFooter>
   </Card>
 </template>

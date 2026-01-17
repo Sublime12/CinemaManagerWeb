@@ -18,7 +18,7 @@ import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/s
 </script>
 
 <template>
-  <SidebarProvider class="w-full">
-    <AppSidebar />
-  </SidebarProvider>
+  <!-- <SidebarProvider class="w-full bg-blue-350"> -->
+  <AppSidebar />
+  <!-- </SidebarProvider> -->
 </template>
