@@ -1,6 +1,7 @@
 package movies
 
 import (
+	"api/auth"
 	"api/core_db"
 	"errors"
 	"net/http"
@@ -12,9 +13,14 @@ import (
 
 
 func MapMoviesRoutes(api *gin.RouterGroup) {
-	router := api.Group("/movies")	
+	router := api.Group("/movies")
 	router.GET("", getMovies)
 	router.GET("/:id", getMovie)
+
+	authRouter := router.Group("")
+	authRouter.Use(auth.AuthRequired)
+
+	authRouter.POST("", postMovie)
 }
 
 
@@ -55,4 +61,36 @@ func getMovie(c *gin.Context) {
 
 
 	c.JSON(http.StatusOK, MovieResponseFrom(movie))
+}
+
+func postMovie(c *gin.Context) {
+	var movieRequest CreateMovieRequest
+	err := c.ShouldBindJSON(&movieRequest)
+	if err != nil {
+		AbortWithError(c, err, http.StatusBadRequest)
+		return
+	}
+	ctx := c.Request.Context()
+	db := core_db.GetSession(c)
+
+	movie := MovieFromRequest(movieRequest)
+	err = gorm.G[Movie](db).Create(ctx, &movie)
+	if err != nil {
+		c.Error(err)
+		AbortWithError(
+			c, 
+			errors.New("Internal server error"), 
+			http.StatusInternalServerError,
+		)
+		return
+	}
+	
+	c.JSON(http.StatusCreated, movie)
+}
+
+func AbortWithError(c *gin.Context, err error, status int) {
+	c.Error(err)
+	c.AbortWithStatusJSON(status, gin.H{
+		"message": err.Error(),
+	})
 }

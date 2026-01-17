@@ -18,7 +18,6 @@ type Movie struct {
 }
 
 func NewMovie(
-	Id int, 
 	Name string, 
 	Description string,
 	PublishedAt	time.Time,
@@ -34,6 +33,17 @@ func NewMovie(
 		Language: Language,
 		Genres: Genres,
 	}
+}
+
+func MovieFromRequest(request CreateMovieRequest) Movie {
+	return NewMovie(
+		request.Name,
+		request.Description,
+		request.PublishedAt,
+		request.Length,
+		request.Language,
+	    request.Genres,
+	)
 }
 
 type Theatre struct {
