@@ -55,7 +55,7 @@ const onSubmit = handleSubmit(async (values) => {
   <Dialog v-model:open="isOpen">
     <DialogTrigger as-child>
       <Button
-        class="bg-rose-600 shadow-rose-600/25 flex items-center gap-2 rounded-xl px-4 py-2 text-xs font-bold text-white shadow-lg hover:bg-rose-500"
+        class="flex items-center gap-2 rounded-xl bg-rose-600 px-4 py-2 text-xs font-bold text-white shadow-lg shadow-rose-600/25 hover:bg-rose-500"
       >
         <Plus class="h-4 w-4" />
         <span>Add New Movie</span>
@@ -63,14 +63,14 @@ const onSubmit = handleSubmit(async (values) => {
     </DialogTrigger>
 
     <DialogContent
-      class="bg-slate-900 border-slate-800 text-slate-100 rounded-3xl p-6 shadow-2xl sm:max-w-lg"
+      class="rounded-3xl border-slate-800 bg-slate-900 p-6 text-slate-100 shadow-2xl sm:max-w-lg"
     >
-      <DialogHeader class="border-slate-800 space-y-1 border-b pb-4 text-left">
+      <DialogHeader class="space-y-1 border-b border-slate-800 pb-4 text-left">
         <DialogTitle class="flex items-center gap-2 text-xl font-bold text-white">
-          <Film class="text-rose-500 h-5 w-5" />
+          <Film class="h-5 w-5 text-rose-500" />
           <span>Create New Movie Listing</span>
         </DialogTitle>
-        <DialogDescription class="text-slate-400 text-xs">
+        <DialogDescription class="text-xs text-slate-400">
           Fill in the details below to add a new movie to the cinema management database.
         </DialogDescription>
       </DialogHeader>
@@ -80,14 +80,16 @@ const onSubmit = handleSubmit(async (values) => {
         <VeeField v-slot="{ field, errors }" name="name">
           <div class="space-y-1">
             <label class="flex items-center gap-1.5 text-xs font-semibold text-slate-300">
-              <Film class="text-rose-500 h-3.5 w-3.5" /> Movie Title
+              <Film class="h-3.5 w-3.5 text-rose-500" /> Movie Title
             </label>
             <Input
               v-bind="field"
               placeholder="e.g. Inception: Remastered"
-              class="border-slate-700 text-slate-100 focus:border-rose-500 w-full rounded-xl border bg-slate-950 px-3.5 py-2 text-sm"
+              class="w-full rounded-xl border border-slate-700 bg-slate-950 px-3.5 py-2 text-sm text-slate-100 focus:border-rose-500"
             />
-            <p v-if="errors.length" class="text-rose-500 text-[11px] font-medium">{{ errors[0] }}</p>
+            <p v-if="errors.length" class="text-[11px] font-medium text-rose-500">
+              {{ errors[0] }}
+            </p>
           </div>
         </VeeField>
 
@@ -95,15 +97,17 @@ const onSubmit = handleSubmit(async (values) => {
         <VeeField v-slot="{ field, errors }" name="description">
           <div class="space-y-1">
             <label class="flex items-center gap-1.5 text-xs font-semibold text-slate-300">
-              <FileText class="text-rose-500 h-3.5 w-3.5" /> Plot Synopsis / Description
+              <FileText class="h-3.5 w-3.5 text-rose-500" /> Plot Synopsis / Description
             </label>
             <textarea
               v-bind="field"
               rows="3"
               placeholder="Enter a compelling overview of the movie..."
-              class="border-slate-700 text-slate-100 focus:border-rose-500 focus:ring-rose-500 w-full rounded-xl border bg-slate-950 px-3.5 py-2 text-sm focus:ring-1 focus:outline-none"
+              class="w-full rounded-xl border border-slate-700 bg-slate-950 px-3.5 py-2 text-sm text-slate-100 focus:border-rose-500 focus:ring-1 focus:ring-rose-500 focus:outline-none"
             ></textarea>
-            <p v-if="errors.length" class="text-rose-500 text-[11px] font-medium">{{ errors[0] }}</p>
+            <p v-if="errors.length" class="text-[11px] font-medium text-rose-500">
+              {{ errors[0] }}
+            </p>
           </div>
         </VeeField>
 
@@ -113,15 +117,17 @@ const onSubmit = handleSubmit(async (values) => {
           <VeeField v-slot="{ field, errors }" name="length_minutes">
             <div class="space-y-1">
               <label class="flex items-center gap-1.5 text-xs font-semibold text-slate-300">
-                <Clock class="text-rose-500 h-3.5 w-3.5" /> Duration (Minutes)
+                <Clock class="h-3.5 w-3.5 text-rose-500" /> Duration (Minutes)
               </label>
               <Input
                 type="number"
                 v-bind="field"
                 placeholder="120"
-                class="border-slate-700 text-slate-100 focus:border-rose-500 w-full rounded-xl border bg-slate-950 px-3.5 py-2 text-sm"
+                class="w-full rounded-xl border border-slate-700 bg-slate-950 px-3.5 py-2 text-sm text-slate-100 focus:border-rose-500"
               />
-              <p v-if="errors.length" class="text-rose-500 text-[11px] font-medium">{{ errors[0] }}</p>
+              <p v-if="errors.length" class="text-[11px] font-medium text-rose-500">
+                {{ errors[0] }}
+              </p>
             </div>
           </VeeField>
 
@@ -129,14 +135,16 @@ const onSubmit = handleSubmit(async (values) => {
           <VeeField v-slot="{ field, errors }" name="language">
             <div class="space-y-1">
               <label class="flex items-center gap-1.5 text-xs font-semibold text-slate-300">
-                <Globe class="text-rose-500 h-3.5 w-3.5" /> Audio Language
+                <Globe class="h-3.5 w-3.5 text-rose-500" /> Audio Language
               </label>
               <Input
                 v-bind="field"
                 placeholder="English"
-                class="border-slate-700 text-slate-100 focus:border-rose-500 w-full rounded-xl border bg-slate-950 px-3.5 py-2 text-sm"
+                class="w-full rounded-xl border border-slate-700 bg-slate-950 px-3.5 py-2 text-sm text-slate-100 focus:border-rose-500"
               />
-              <p v-if="errors.length" class="text-rose-500 text-[11px] font-medium">{{ errors[0] }}</p>
+              <p v-if="errors.length" class="text-[11px] font-medium text-rose-500">
+                {{ errors[0] }}
+              </p>
             </div>
           </VeeField>
         </div>
@@ -146,14 +154,16 @@ const onSubmit = handleSubmit(async (values) => {
           <VeeField v-slot="{ field, errors }" name="published_at">
             <div class="space-y-1">
               <label class="flex items-center gap-1.5 text-xs font-semibold text-slate-300">
-                <Calendar class="text-rose-500 h-3.5 w-3.5" /> Release Date
+                <Calendar class="h-3.5 w-3.5 text-rose-500" /> Release Date
               </label>
               <Input
                 type="date"
                 v-bind="field"
-                class="border-slate-700 text-slate-100 focus:border-rose-500 w-full rounded-xl border bg-slate-950 px-3.5 py-2 text-sm"
+                class="w-full rounded-xl border border-slate-700 bg-slate-950 px-3.5 py-2 text-sm text-slate-100 focus:border-rose-500"
               />
-              <p v-if="errors.length" class="text-rose-500 text-[11px] font-medium">{{ errors[0] }}</p>
+              <p v-if="errors.length" class="text-[11px] font-medium text-rose-500">
+                {{ errors[0] }}
+              </p>
             </div>
           </VeeField>
 
@@ -161,27 +171,35 @@ const onSubmit = handleSubmit(async (values) => {
           <VeeField v-slot="{ field, errors }" name="genres">
             <div class="space-y-1">
               <label class="flex items-center gap-1.5 text-xs font-semibold text-slate-300">
-                <Tag class="text-rose-500 h-3.5 w-3.5" /> Genres (Comma separated)
+                <Tag class="h-3.5 w-3.5 text-rose-500" /> Genres (Comma separated)
               </label>
               <Input
                 v-bind="field"
                 placeholder="Action, Sci-Fi, Thriller"
-                class="border-slate-700 text-slate-100 focus:border-rose-500 w-full rounded-xl border bg-slate-950 px-3.5 py-2 text-sm"
+                class="w-full rounded-xl border border-slate-700 bg-slate-950 px-3.5 py-2 text-sm text-slate-100 focus:border-rose-500"
               />
-              <p v-if="errors.length" class="text-rose-500 text-[11px] font-medium">{{ errors[0] }}</p>
+              <p v-if="errors.length" class="text-[11px] font-medium text-rose-500">
+                {{ errors[0] }}
+              </p>
             </div>
           </VeeField>
         </div>
 
-        <DialogFooter class="border-slate-800 flex items-center justify-end gap-2 border-t pt-4">
+        <DialogFooter class="flex items-center justify-end gap-2 border-t border-slate-800 pt-4">
           <DialogClose as-child>
-            <Button type="button" variant="outline" class="rounded-xl text-xs border-slate-700 hover:bg-slate-800 text-slate-300"> Cancel </Button>
+            <Button
+              type="button"
+              variant="outline"
+              class="rounded-xl border-slate-700 text-xs text-slate-300 hover:bg-slate-800"
+            >
+              Cancel
+            </Button>
           </DialogClose>
 
           <Button
             type="submit"
             :disabled="isPending"
-            class="bg-rose-600 shadow-rose-600/20 rounded-xl px-5 py-2 text-xs font-bold text-white shadow-lg hover:bg-rose-500"
+            class="rounded-xl bg-rose-600 px-5 py-2 text-xs font-bold text-white shadow-lg shadow-rose-600/20 hover:bg-rose-500"
           >
             <span v-if="isPending">Saving Movie...</span>
             <span v-else>Publish Movie</span>
