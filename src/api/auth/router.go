@@ -88,7 +88,7 @@ func AuthRequired(c *gin.Context) {
 	user := session.Get(userIdKey)
 	if user == nil {
 		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
-			"error": "Unauthorized",
+			"error": "Unauthorized, User is not login",
 		})
 		return
 	}

@@ -28,7 +28,7 @@ restart:
 	$(COMPOSE) down && $(COMPOSE) --profile dev up -d
 
 logs:
-	$(COMPOSE) logs -f
+	$(COMPOSE) --profile dev logs -f
 
 ps:
 	$(COMPOSE) ps
