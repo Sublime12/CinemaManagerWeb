@@ -24,3 +24,12 @@ func MovieResponseFrom(m Movie) MovieResponse {
 		Genres:      []string(m.Genres),
 	}
 }
+
+type CreateMovieRequest struct {
+	Name        string        `json:"name" binding:"required,min=1"`
+	Description string        `json:"description" binding:"required,min=10"`
+	PublishedAt time.Time     `json:"published_at" binding:"required"`
+	Length      time.Duration `json:"length" binding:"required,gt=0"`
+	Language    string        `json:"language" binding:"required,min=2"`
+	Genres      []string      `json:"genres" binding:"required,dive,required"`
+}

@@ -54,7 +54,7 @@ services:
       - "traefik.http.routers.dashboard.tls=true"
 
   db:
-    container_name: db
+    container_name: cinema_db
     image: postgres:18
     environment:
       POSTGRES_DB: ${POSTGRES_DB:-cinema_manager}
