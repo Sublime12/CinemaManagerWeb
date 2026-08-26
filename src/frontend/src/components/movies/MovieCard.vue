@@ -1,13 +1,22 @@
 <script setup lang="ts">
 import type { Movie } from '@/composables/movies/queries';
-import { Clock, Star, Film, Ticket, Calendar, Globe } from 'lucide-vue-next';
+import { Clock, Star, Ticket, Calendar, Globe } from 'lucide-vue-next';
 import { computed } from 'vue';
 import moment from 'moment';
+import defaultPoster from '@/assets/movie-img-1.webp';
 
 const props = defineProps<{
   movie: Movie;
   isAdmin?: boolean;
 }>();
+
+const posterUrl = computed(() => {
+  if (props.movie?.image_url) {
+    if (props.movie.image_url.startsWith('http')) return props.movie.image_url;
+    return `/api${props.movie.image_url}`;
+  }
+  return defaultPoster;
+});
 
 const formattedDuration = computed(() => {
   if (!props.movie?.length) return '2h 0m';
@@ -32,9 +41,10 @@ const releaseYear = computed(() => {
     <!-- Poster Image Container -->
     <div class="relative aspect-[2/3] w-full overflow-hidden bg-slate-900">
       <img
-        src="@/assets/movie-img-1.webp"
+        :src="posterUrl"
         :alt="movie.name"
         class="h-full w-full object-cover object-center transition-transform duration-500 group-hover:scale-105"
+        @error="(e: Event) => ((e.target as HTMLImageElement).src = defaultPoster)"
       />
 
       <!-- Top Overlay Badges -->

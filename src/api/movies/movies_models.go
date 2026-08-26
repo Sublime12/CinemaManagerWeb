@@ -7,13 +7,13 @@ import (
 )
 
 type Movie struct {
-	Name string `json:"name" binding:"required"`
-	Description string `json:"description" binding:"required"`	
-	PublishedAt time.Time `json:"published_at" binding:"required"` 
-	Length time.Duration `json:"length" binding:"required"`
-	Language string `json:"language" binding:"required"`
-	// Genres []string `json:"genres" binding:"required"`
-	Genres pq.StringArray `json:"genres" gorm:"type:text[]" binding:"required"`
+	Name        string         `json:"name" binding:"required"`
+	Description string         `json:"description" binding:"required"`	
+	PublishedAt time.Time      `json:"published_at" binding:"required"` 
+	Length      time.Duration  `json:"length" binding:"required"`
+	Language    string         `json:"language" binding:"required"`
+	Genres      pq.StringArray `json:"genres" gorm:"type:text[]" binding:"required"`
+	ImageURL    string         `json:"image_url"`
 	gorm.Model
 }
 
@@ -24,14 +24,16 @@ func NewMovie(
 	Length time.Duration, 
 	Language string,
 	Genres []string,
+	ImageURL string,
 ) Movie {
 	return Movie{
-		Name: Name,
+		Name:        Name,
 		Description: Description,
 		PublishedAt: PublishedAt,
-		Length: Length,
-		Language: Language,
-		Genres: Genres,
+		Length:      Length,
+		Language:    Language,
+		Genres:      Genres,
+		ImageURL:    ImageURL,
 	}
 }
 
@@ -42,16 +44,17 @@ func MovieFromRequest(request CreateMovieRequest) Movie {
 		request.PublishedAt,
 		request.Length,
 		request.Language,
-	    request.Genres,
+		request.Genres,
+		request.ImageURL,
 	)
 }
 
 type Theatre struct {
-	Id int `json:"id"`
-	Name string `json:"name" binding:"required"`
+	Id          int     `json:"id"`
+	Name        string  `json:"name" binding:"required"`
 	Description *string `json:"description" binding:""`
-	City string `json:"city" binding:"required"`
-	Address string `json:"address" binding:"required"`
+	City        string  `json:"city" binding:"required"`
+	Address     string  `json:"address" binding:"required"`
 }
 
 func NewThreatre(
@@ -60,10 +63,10 @@ func NewThreatre(
 	Name, City, Address string,
 ) Theatre {
 	return Theatre{
-		Id: Id,
+		Id:          Id,
 		Description: Description,
-		Name: Name,
-		City: City,
-		Address: Address,
+		Name:        Name,
+		City:        City,
+		Address:     Address,
 	}
 }

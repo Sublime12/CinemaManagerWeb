@@ -15,13 +15,31 @@ import { Input } from '@/components/ui/input';
 import { toTypedSchema } from '@vee-validate/zod';
 import { useForm, Field as VeeField } from 'vee-validate';
 import { toast } from 'vue-sonner';
-import { CreateMovieFormSchema, useCreateMovieMutation } from '@/composables/movies/queries';
-import { Film, Plus, Clock, Globe, Calendar, Tag, FileText } from 'lucide-vue-next';
+import {
+  CreateMovieFormSchema,
+  useCreateMovieMutation,
+  useUploadPosterMutation,
+} from '@/composables/movies/queries';
+import {
+  Film,
+  Plus,
+  Clock,
+  Globe,
+  Calendar,
+  Tag,
+  FileText,
+  Image as ImageIcon,
+  Upload,
+  Loader2,
+} from 'lucide-vue-next';
 
 const isOpen = ref(false);
+const fileInput = ref<HTMLInputElement | null>(null);
+const previewUrl = ref<string | null>(null);
+
 const formSchema = toTypedSchema(CreateMovieFormSchema);
 
-const { handleSubmit, resetForm } = useForm({
+const { handleSubmit, resetForm, setFieldValue } = useForm({
   validationSchema: formSchema,
   initialValues: {
     name: '',
@@ -30,25 +48,64 @@ const { handleSubmit, resetForm } = useForm({
     length_minutes: 120,
     language: 'English',
     genres: 'Action, Sci-Fi',
+    image_url: '',
   },
 });
 
-const { mutateAsync, isPending } = useCreateMovieMutation();
+const { mutateAsync: createMovie, isPending } = useCreateMovieMutation();
+const { mutateAsync: uploadPoster, isPending: isUploading } = useUploadPosterMutation();
 
-const onSubmit = handleSubmit(async (values) => {
+const handleFileSelect = async (event: Event) => {
+  const target = event.target as HTMLInputElement;
+  if (!target.files || target.files.length === 0) return;
+
+  const file = target.files[0];
   try {
-    await mutateAsync(values);
-    toast.success('Movie created successfully!', {
-      description: `"${values.name}" has been added to the cinema catalog.`,
-    });
-    resetForm();
-    isOpen.value = false;
+    const res = await uploadPoster(file);
+    setFieldValue('image_url', res.url);
+    previewUrl.value = `/api${res.url}`;
+    toast.success('Poster uploaded successfully!');
   } catch (err: any) {
-    toast.error('Failed to create movie', {
-      description: err?.response?.data?.message || 'Please check admin authentication.',
+    toast.error('Failed to upload poster image', {
+      description: err?.response?.data?.message || err?.message || 'Please check file format.',
     });
   }
-});
+};
+
+const triggerFileInput = () => {
+  fileInput.value?.click();
+};
+
+const onSubmit = handleSubmit(
+  async (values) => {
+    try {
+      await createMovie(values);
+      toast.success('Movie created successfully!', {
+        description: `"${values.name}" has been added to the cinema catalog.`,
+      });
+      resetForm();
+      previewUrl.value = null;
+      isOpen.value = false;
+    } catch (err: any) {
+      const status = err?.response?.status;
+      if (status === 401) {
+        toast.error('Authentication Required', {
+          description: 'You must log in as an Admin first (go to Admin Login page).',
+        });
+      } else {
+        toast.error('Failed to create movie', {
+          description: err?.response?.data?.message || err?.message || 'Server error occurred.',
+        });
+      }
+    }
+  },
+  (validationErrors) => {
+    console.warn('Form validation errors:', validationErrors);
+    toast.error('Validation Error', {
+      description: 'Please make sure all form fields are filled out correctly.',
+    });
+  },
+);
 </script>
 
 <template>
@@ -63,7 +120,7 @@ const onSubmit = handleSubmit(async (values) => {
     </DialogTrigger>
 
     <DialogContent
-      class="rounded-3xl border-slate-800 bg-slate-900 p-6 text-slate-100 shadow-2xl sm:max-w-lg"
+      class="max-h-[90vh] overflow-y-auto rounded-3xl border-slate-800 bg-slate-900 p-6 text-slate-100 shadow-2xl sm:max-w-lg"
     >
       <DialogHeader class="space-y-1 border-b border-slate-800 pb-4 text-left">
         <DialogTitle class="flex items-center gap-2 text-xl font-bold text-white">
@@ -76,6 +133,58 @@ const onSubmit = handleSubmit(async (values) => {
       </DialogHeader>
 
       <form id="create-movie-form" @submit="onSubmit" class="space-y-4 py-2">
+        <!-- Poster Image Upload Box -->
+        <div class="space-y-1.5">
+          <label class="flex items-center gap-1.5 text-xs font-semibold text-slate-300">
+            <ImageIcon class="h-3.5 w-3.5 text-rose-500" /> Movie Poster Image
+          </label>
+
+          <input
+            ref="fileInput"
+            type="file"
+            accept="image/*"
+            class="hidden"
+            @change="handleFileSelect"
+          />
+
+          <div
+            @click="triggerFileInput"
+            class="group relative flex cursor-pointer flex-col items-center justify-center overflow-hidden rounded-2xl border-2 border-dashed border-slate-700 bg-slate-950/60 p-4 transition-all hover:border-rose-500/60"
+          >
+            <div v-if="previewUrl" class="group relative h-44 w-full overflow-hidden rounded-xl">
+              <img :src="previewUrl" alt="Poster preview" class="h-full w-full object-cover" />
+              <div
+                class="absolute inset-0 flex items-center justify-center gap-2 bg-slate-950/60 text-xs font-bold text-white opacity-0 transition-opacity group-hover:opacity-100"
+              >
+                <Upload class="h-4 w-4" /> Change Image
+              </div>
+            </div>
+
+            <div
+              v-else-if="isUploading"
+              class="flex flex-col items-center gap-2 py-6 text-slate-400"
+            >
+              <Loader2 class="h-6 w-6 animate-spin text-rose-500" />
+              <span class="text-xs font-medium">Uploading poster to server...</span>
+            </div>
+
+            <div
+              v-else
+              class="flex flex-col items-center gap-2 py-5 text-slate-400 group-hover:text-slate-200"
+            >
+              <div class="rounded-full border border-slate-800 bg-slate-900 p-2.5 text-rose-500">
+                <Upload class="h-5 w-5" />
+              </div>
+              <div class="text-center">
+                <span class="text-xs font-semibold text-rose-400"
+                  >Click to upload poster image</span
+                >
+                <p class="text-[10px] text-slate-500">PNG, JPG, WEBP up to 10MB</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- Movie Title -->
         <VeeField v-slot="{ field, errors }" name="name">
           <div class="space-y-1">
@@ -198,7 +307,7 @@ const onSubmit = handleSubmit(async (values) => {
 
           <Button
             type="submit"
-            :disabled="isPending"
+            :disabled="isPending || isUploading"
             class="rounded-xl bg-rose-600 px-5 py-2 text-xs font-bold text-white shadow-lg shadow-rose-600/20 hover:bg-rose-500"
           >
             <span v-if="isPending">Saving Movie...</span>

@@ -2,6 +2,7 @@
 import { useGetMovieQuery } from '@/composables/movies/queries';
 import { computed, toRefs, ref, watchEffect } from 'vue';
 import moment from 'moment';
+import defaultPoster from '@/assets/movie-img-1.webp';
 import {
   Clock,
   Star,
@@ -11,7 +12,6 @@ import {
   Globe,
   ArrowLeft,
   Play,
-  Sparkles,
   MapPin,
   CheckCircle2,
 } from 'lucide-vue-next';
@@ -26,6 +26,14 @@ const { data: movie, isFetching, isError, error } = useGetMovieQuery(id);
 
 const selectedDate = ref('Today');
 const selectedShowtime = ref<string | null>('19:15');
+
+const posterUrl = computed(() => {
+  if (movie.value?.image_url) {
+    if (movie.value.image_url.startsWith('http')) return movie.value.image_url;
+    return `/api${movie.value.image_url}`;
+  }
+  return defaultPoster;
+});
 
 const formattedDate = computed(() => {
   if (!movie.value) return undefined;
@@ -96,7 +104,7 @@ watchEffect(() => {
         ></div>
         <div
           class="absolute top-0 right-0 bottom-0 w-full bg-cover bg-center opacity-30 blur-xs md:w-2/3"
-          style="background-image: url('/src/assets/movie-img-1.webp')"
+          :style="{ backgroundImage: `url(${posterUrl})` }"
         ></div>
 
         <div class="relative z-20 flex flex-col items-start gap-8 md:flex-row md:items-center">
@@ -105,9 +113,10 @@ watchEffect(() => {
             class="group relative aspect-[2/3] w-48 shrink-0 overflow-hidden rounded-2xl border border-white/10 bg-slate-900 shadow-2xl md:w-64"
           >
             <img
-              src="@/assets/movie-img-1.webp"
+              :src="posterUrl"
               :alt="movie.name"
               class="h-full w-full object-cover"
+              @error="(e: Event) => ((e.target as HTMLImageElement).src = defaultPoster)"
             />
             <div
               class="absolute top-3 left-3 flex items-center gap-1 rounded-md border border-amber-400/30 bg-black/70 px-2.5 py-1 text-xs font-bold text-amber-400 backdrop-blur-md"

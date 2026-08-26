@@ -21,7 +21,9 @@ func SeedUsers(db *gorm.DB) {
 		fmt.Fprintln(os.Stderr, "Can't hash password", err)
 	}
 
+	test_password, err := auth.HashPassword("testpass")
 	users := []auth.User{
+		auth.NewUser("testuser", "testuser@test.com", test_password, "Test User"),
 		auth.NewUser("user01", "user01@test.com", password, "User One"),
 		auth.NewUser("user02", "user02@test.com", password, "User Two"),
 		auth.NewUser("user03", "user03@test.com", password, "User Three"),
