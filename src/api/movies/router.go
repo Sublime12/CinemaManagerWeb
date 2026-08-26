@@ -4,8 +4,12 @@ import (
 	"api/auth"
 	"api/core_db"
 	"errors"
+	"fmt"
 	"net/http"
+	"os"
+	"path/filepath"
 	"strconv"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"gorm.io/gorm"
@@ -21,6 +25,7 @@ func MapMoviesRoutes(api *gin.RouterGroup) {
 	authRouter.Use(auth.AuthRequired)
 
 	authRouter.POST("", postMovie)
+	authRouter.POST("/upload", uploadPoster)
 }
 
 
@@ -86,6 +91,29 @@ func postMovie(c *gin.Context) {
 	}
 	
 	c.JSON(http.StatusCreated, movie)
+}
+
+func uploadPoster(c *gin.Context) {
+	file, err := c.FormFile("file")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "No file uploaded"})
+		return
+	}
+
+	extension := filepath.Ext(file.Filename)
+	filename := fmt.Sprintf("%d%s", time.Now().UnixNano(), extension)
+	savePath := filepath.Join("uploads", "posters", filename)
+
+	os.MkdirAll(filepath.Dir(savePath), os.ModePerm)
+
+	if err := c.SaveUploadedFile(file, savePath); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to save file"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"url": "/uploads/posters/" + filename,
+	})
 }
 
 func AbortWithError(c *gin.Context, err error, status int) {

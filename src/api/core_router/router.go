@@ -37,6 +37,9 @@ func Engine(dbDns, redisDns string) (*gin.Engine, error) {
 	movies.MapMoviesRoutes(api)
 	auth.MapAuthRoutes(api)
 
+	
+	api.Static("/uploads", "./uploads");
+
 	api.GET("/", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
 			"message": "hello world",

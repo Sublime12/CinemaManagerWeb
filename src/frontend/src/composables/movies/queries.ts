@@ -16,6 +16,7 @@ const MovieSchema = z.object({
     .transform((ms) => moment.duration(ms / 1e6)),
   language: z.string(),
   genres: z.array(z.string()),
+  image_url: z.string().optional().default(''),
 });
 
 const MoviesSchema = z.array(MovieSchema);
@@ -26,9 +27,10 @@ export const CreateMovieFormSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters.'),
   description: z.string().min(10, 'Description must be at least 10 characters.'),
   published_at: z.string().min(1, 'Release date is required.'),
-  length_minutes: z.number().min(1, 'Duration must be greater than 0.'),
+  length_minutes: z.coerce.number().min(1, 'Duration must be greater than 0.'),
   language: z.string().min(2, 'Language is required.'),
   genres: z.string().min(2, 'Genres are required (comma separated).'),
+  image_url: z.string().optional().default(''),
 });
 
 export type CreateMovieForm = z.infer<typeof CreateMovieFormSchema>;
@@ -53,6 +55,22 @@ export function useGetMovieQuery(id: Ref<string>) {
   });
 }
 
+export function useUploadPosterMutation() {
+  return useMutation({
+    mutationKey: ['upload-poster'],
+    mutationFn: async (file: File) => {
+      const formData = new FormData();
+      formData.append('file', file);
+      const response = await api.post<{ url: string }>(`/movies/upload`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      return response.data;
+    },
+  });
+}
+
 export function useCreateMovieMutation() {
   const queryClient = useQueryClient();
   return useMutation({
@@ -62,13 +80,13 @@ export function useCreateMovieMutation() {
         name: form.name,
         description: form.description,
         published_at: new Date(form.published_at).toISOString(),
-        // Convert minutes to nanoseconds for Go time.Duration (minutes * 60 * 1e9)
-        length: form.length_minutes * 60 * 1e9,
+        length: Number(form.length_minutes) * 60 * 1e9,
         language: form.language,
         genres: form.genres
           .split(',')
           .map((g) => g.trim())
           .filter(Boolean),
+        image_url: form.image_url || '',
       };
       const response = await api.post(`/movies`, payload);
       return response.data;
