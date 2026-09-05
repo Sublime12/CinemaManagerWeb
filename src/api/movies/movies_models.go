@@ -49,6 +49,16 @@ func MovieFromRequest(request CreateMovieRequest) Movie {
 	)
 }
 
+func UpdateMovieFromRequest(movie *Movie, request CreateMovieRequest) {
+	movie.Name = request.Name
+	movie.Description = request.Description
+	movie.PublishedAt = request.PublishedAt
+	movie.Length = request.Length
+	movie.Language = request.Language
+	movie.Genres = request.Genres
+	movie.ImageURL = request.ImageURL
+}
+
 type Theatre struct {
 	Id          int     `json:"id"`
 	Name        string  `json:"name" binding:"required"`
