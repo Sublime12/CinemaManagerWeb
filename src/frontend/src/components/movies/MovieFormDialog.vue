@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { ref, computed, watch } from 'vue';
 import moment from 'moment';
 import defaultPoster from '@/assets/movie-img-1.webp';
 import { Button } from '@/components/ui/button';
@@ -19,12 +19,14 @@ import { useForm, Field as VeeField } from 'vee-validate';
 import { toast } from 'vue-sonner';
 import {
   CreateMovieFormSchema,
+  useCreateMovieMutation,
   useUpdateMovieMutation,
   useUploadPosterMutation,
   type Movie,
 } from '@/composables/movies/queries';
 import {
   Film,
+  Plus,
   Pencil,
   Clock,
   Globe,
@@ -37,8 +39,10 @@ import {
 } from 'lucide-vue-next';
 
 const props = defineProps<{
-  movie: Movie;
+  movie?: Movie;
 }>();
+
+const isEditing = computed(() => !!props.movie);
 
 const isOpen = ref(false);
 const fileInput = ref<HTMLInputElement | null>(null);
@@ -47,7 +51,7 @@ const previewUrl = ref<string | null>(null);
 const formSchema = toTypedSchema(CreateMovieFormSchema);
 
 const resolvePosterUrl = (url?: string | null) => {
-  if (!url) return defaultPoster;
+  if (!url) return null;
   if (url.startsWith('http') || url.startsWith('blob:') || url.startsWith('data:')) {
     return url;
   }
@@ -58,30 +62,42 @@ const resolvePosterUrl = (url?: string | null) => {
 };
 
 const getInitialValues = () => {
-  let lengthMinutes = 120;
-  if (props.movie?.length) {
-    if (typeof props.movie.length.asMinutes === 'function') {
-      lengthMinutes = Math.round(props.movie.length.asMinutes());
-    } else if (typeof props.movie.length === 'number') {
-      lengthMinutes = Math.round(props.movie.length);
+  if (props.movie) {
+    let lengthMinutes = 120;
+    if (props.movie.length) {
+      if (typeof props.movie.length.asMinutes === 'function') {
+        lengthMinutes = Math.round(props.movie.length.asMinutes());
+      } else if (typeof props.movie.length === 'number') {
+        lengthMinutes = Math.round(props.movie.length);
+      }
     }
-  }
 
-  let publishedAt = new Date().toISOString().split('T')[0];
-  if (props.movie?.published_at) {
-    publishedAt = moment(props.movie.published_at).isValid()
-      ? moment(props.movie.published_at).format('YYYY-MM-DD')
-      : String(props.movie.published_at).split('T')[0];
+    let publishedAt = new Date().toISOString().split('T')[0];
+    if (props.movie.published_at) {
+      publishedAt = moment(props.movie.published_at).isValid()
+        ? moment(props.movie.published_at).format('YYYY-MM-DD')
+        : String(props.movie.published_at).split('T')[0];
+    }
+
+    return {
+      name: props.movie.name || '',
+      description: props.movie.description || '',
+      published_at: publishedAt,
+      length_minutes: lengthMinutes,
+      language: props.movie.language || 'English',
+      genres: Array.isArray(props.movie.genres) ? props.movie.genres.join(', ') : '',
+      image_url: props.movie.image_url || '',
+    };
   }
 
   return {
-    name: props.movie?.name || '',
-    description: props.movie?.description || '',
-    published_at: publishedAt,
-    length_minutes: lengthMinutes,
-    language: props.movie?.language || 'English',
-    genres: Array.isArray(props.movie?.genres) ? props.movie.genres.join(', ') : '',
-    image_url: props.movie?.image_url || '',
+    name: '',
+    description: '',
+    published_at: new Date().toISOString().split('T')[0],
+    length_minutes: 120,
+    language: 'English',
+    genres: 'Action, Sci-Fi',
+    image_url: '',
   };
 };
 
@@ -103,8 +119,28 @@ watch(
   { immediate: true, deep: true },
 );
 
-const { mutateAsync: updateMovie, isPending } = useUpdateMovieMutation();
+const { mutateAsync: createMovie, isPending: isCreating } = useCreateMovieMutation();
+const { mutateAsync: updateMovie, isPending: isUpdating } = useUpdateMovieMutation();
 const { mutateAsync: uploadPoster, isPending: isUploading } = useUploadPosterMutation();
+
+const isPending = computed(() => isCreating.value || isUpdating.value);
+
+const dialogTitle = computed(() =>
+  isEditing.value ? 'Edit Movie Listing' : 'Create New Movie Listing',
+);
+
+const dialogDescription = computed(() =>
+  isEditing.value
+    ? 'Modify the details below to update this movie in the database.'
+    : 'Fill in the details below to add a new movie to the cinema management database.',
+);
+
+const submitButtonText = computed(() => {
+  if (isPending.value) {
+    return isEditing.value ? 'Saving Changes...' : 'Saving Movie...';
+  }
+  return isEditing.value ? 'Update Movie' : 'Publish Movie';
+});
 
 const handleFileSelect = async (event: Event) => {
   const target = event.target as HTMLInputElement;
@@ -130,19 +166,28 @@ const triggerFileInput = () => {
 const onSubmit = handleSubmit(
   async (values) => {
     try {
-      await updateMovie({ id: props.movie.id, form: values });
-      toast.success('Movie updated successfully!', {
-        description: `"${values.name}" details have been updated.`,
-      });
+      if (isEditing.value && props.movie) {
+        await updateMovie({ id: props.movie.id, form: values });
+        toast.success('Movie updated successfully!', {
+          description: `"${values.name}" details have been updated.`,
+        });
+      } else {
+        await createMovie(values);
+        toast.success('Movie created successfully!', {
+          description: `"${values.name}" has been added to the cinema catalog.`,
+        });
+        resetForm();
+        previewUrl.value = null;
+      }
       isOpen.value = false;
     } catch (err: any) {
       const status = err?.response?.status;
       if (status === 401) {
         toast.error('Authentication Required', {
-          description: 'You must log in as an Admin to edit movies.',
+          description: 'You must log in as an Admin first.',
         });
       } else {
-        toast.error('Failed to update movie', {
+        toast.error(isEditing.value ? 'Failed to update movie' : 'Failed to create movie', {
           description: err?.response?.data?.message || err?.message || 'Server error occurred.',
         });
       }
@@ -162,12 +207,20 @@ const onSubmit = handleSubmit(
     <DialogTrigger as-child>
       <slot>
         <Button
+          v-if="isEditing"
           variant="outline"
           size="sm"
           class="flex items-center gap-1.5 rounded-xl border-slate-700 bg-slate-900/80 text-xs font-semibold text-slate-200 hover:border-rose-500/50 hover:bg-slate-800 hover:text-white"
         >
           <Pencil class="h-3.5 w-3.5 text-rose-500" />
           <span>Edit</span>
+        </Button>
+        <Button
+          v-else
+          class="flex items-center gap-2 rounded-xl bg-rose-600 px-4 py-2 text-xs font-bold text-white shadow-lg shadow-rose-600/25 hover:bg-rose-500"
+        >
+          <Plus class="h-4 w-4" />
+          <span>Add New Movie</span>
         </Button>
       </slot>
     </DialogTrigger>
@@ -177,15 +230,16 @@ const onSubmit = handleSubmit(
     >
       <DialogHeader class="space-y-1 border-b border-slate-800 pb-4 text-left">
         <DialogTitle class="flex items-center gap-2 text-xl font-bold text-white">
-          <Pencil class="h-5 w-5 text-rose-500" />
-          <span>Edit Movie Listing</span>
+          <Pencil v-if="isEditing" class="h-5 w-5 text-rose-500" />
+          <Film v-else class="h-5 w-5 text-rose-500" />
+          <span>{{ dialogTitle }}</span>
         </DialogTitle>
         <DialogDescription class="text-xs text-slate-400">
-          Modify the details below to update this movie in the database.
+          {{ dialogDescription }}
         </DialogDescription>
       </DialogHeader>
 
-      <form id="edit-movie-form" @submit="onSubmit" class="space-y-4 py-2">
+      <form id="movie-form" @submit="onSubmit" class="space-y-4 py-2">
         <!-- Poster Image Upload Box -->
         <div class="space-y-1.5">
           <label class="flex items-center gap-1.5 text-xs font-semibold text-slate-300">
@@ -234,9 +288,9 @@ const onSubmit = handleSubmit(
                 <Upload class="h-5 w-5" />
               </div>
               <div class="text-center">
-                <span class="text-xs font-semibold text-rose-400"
-                  >Click to upload new poster image</span
-                >
+                <span class="text-xs font-semibold text-rose-400">
+                  {{ isEditing ? 'Click to upload new poster image' : 'Click to upload poster image' }}
+                </span>
                 <p class="text-[10px] text-slate-500">PNG, JPG, WEBP up to 10MB</p>
               </div>
             </div>
@@ -368,8 +422,7 @@ const onSubmit = handleSubmit(
             :disabled="isPending || isUploading"
             class="rounded-xl bg-rose-600 px-5 py-2 text-xs font-bold text-white shadow-lg shadow-rose-600/20 hover:bg-rose-500"
           >
-            <span v-if="isPending">Saving Changes...</span>
-            <span v-else>Update Movie</span>
+            <span>{{ submitButtonText }}</span>
           </Button>
         </DialogFooter>
       </form>

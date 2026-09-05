@@ -4,7 +4,7 @@ import { Clock, Star, Ticket, Calendar, Globe, Pencil } from 'lucide-vue-next';
 import { computed } from 'vue';
 import moment from 'moment';
 import defaultPoster from '@/assets/movie-img-1.webp';
-import EditMovieDialog from '@/components/movies/EditMovieDialog.vue';
+import MovieFormDialog from '@/components/movies/MovieFormDialog.vue';
 
 const props = defineProps<{
   movie: Movie;
@@ -76,14 +76,14 @@ const releaseYear = computed(() => {
       <div
         class="absolute right-4 bottom-4 left-4 z-10 translate-y-2 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100"
       >
-        <EditMovieDialog v-if="isAdmin" :movie="movie">
+        <MovieFormDialog v-if="isAdmin" :movie="movie">
           <button
             class="flex w-full items-center justify-center gap-2 rounded-xl border border-slate-700 bg-slate-950/90 px-4 py-2.5 text-xs font-bold text-white shadow-lg transition-all hover:border-rose-500 hover:bg-slate-900"
           >
             <Pencil class="h-4 w-4 text-rose-500" />
             <span>Edit Movie Details</span>
           </button>
-        </EditMovieDialog>
+        </MovieFormDialog>
         <button
           v-else
           class="bg-primary shadow-primary/30 flex w-full items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-xs font-semibold text-white shadow-lg hover:bg-rose-600"
@@ -114,7 +114,6 @@ const releaseYear = computed(() => {
           >
             {{ movie.name }}
           </h3>
-          <EditMovieDialog v-if="isAdmin" :movie="movie" />
         </div>
 
         <p class="text-muted-foreground mt-1.5 line-clamp-2 text-xs leading-relaxed">
