@@ -1,7 +1,15 @@
 <script setup lang="ts">
 import { ROUTE_NAME } from '@/router';
 import { useRoute, useRouter } from 'vue-router';
-import { Clapperboard, Film, LayoutDashboard, LogIn, LogOut, ShieldCheck } from 'lucide-vue-next';
+import {
+  Clapperboard,
+  Film,
+  LayoutDashboard,
+  LogIn,
+  LogOut,
+  ShieldCheck,
+  User,
+} from 'lucide-vue-next';
 import { useGetMeQuery, useLogoutMutation } from '@/composables/auth/queries';
 import { computed } from 'vue';
 import { toast } from 'vue-sonner';
@@ -13,6 +21,7 @@ const { data: meData } = useGetMeQuery();
 const { mutateAsync: logoutMutate } = useLogoutMutation();
 
 const isLoggedIn = computed(() => !!meData.value?.user);
+const isAdmin = computed(() => !!meData.value?.is_admin);
 
 const handleLogout = async () => {
   try {
@@ -68,9 +77,9 @@ const isActive = (routeName: string) => route.name === routeName;
           <span>Movies</span>
         </RouterLink>
 
-        <!-- Admin Dashboard Link (Only visible when connected) -->
+        <!-- Admin Dashboard Link (Only visible when connected AND is_admin) -->
         <RouterLink
-          v-if="isLoggedIn"
+          v-if="isAdmin"
           :to="{ name: ROUTE_NAME.ADMIN }"
           :class="[
             'flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-semibold transition-all duration-200',
@@ -89,10 +98,18 @@ const isActive = (routeName: string) => route.name === routeName;
         <!-- Connected Status Badge & Logout Button -->
         <div v-if="isLoggedIn" class="flex items-center gap-2">
           <span
+            v-if="isAdmin"
             class="hidden items-center gap-1.5 rounded-full border border-emerald-500/20 bg-emerald-500/10 px-3 py-1 text-xs font-semibold text-emerald-400 sm:inline-flex"
           >
             <ShieldCheck class="h-3.5 w-3.5" />
             <span>Admin Active</span>
+          </span>
+          <span
+            v-else
+            class="hidden items-center gap-1.5 rounded-full border border-blue-500/20 bg-blue-500/10 px-3 py-1 text-xs font-semibold text-blue-400 sm:inline-flex"
+          >
+            <User class="h-3.5 w-3.5" />
+            <span>Connected</span>
           </span>
 
           <button

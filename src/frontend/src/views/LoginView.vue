@@ -3,15 +3,11 @@ import { toTypedSchema } from '@vee-validate/zod';
 import { useForm, Field as VeeField } from 'vee-validate';
 import { toast } from 'vue-sonner';
 
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Field, FieldError, FieldGroup, FieldLabel } from '@/components/ui/field';
 import { Input } from '@/components/ui/input';
 
-import { h } from 'vue';
 import { LoginFormSchema, useLoginMutation } from '@/composables/auth/queries';
 import router, { ROUTE_NAME } from '@/router';
-import { Clapperboard, Lock, User, LogIn, KeyRound } from 'lucide-vue-next';
+import { Clapperboard, Lock, User, LogIn } from 'lucide-vue-next';
 
 const formSchema = toTypedSchema(LoginFormSchema);
 

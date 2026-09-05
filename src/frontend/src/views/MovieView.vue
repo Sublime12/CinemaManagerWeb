@@ -22,7 +22,16 @@ const props = defineProps<{
 }>();
 
 const { id } = toRefs(props);
-const { data: movie, isFetching, isError, error } = useGetMovieQuery(id);
+
+const movieId = computed(() => {
+  const n = parseInt(id.value);
+  if (isNaN(n)) return 0;
+  return n;
+});
+
+const isMovieIdValid = computed(() => isNaN(parseInt(id.value)));
+
+const { data: movie, isFetching, isError, error } = useGetMovieQuery(movieId);
 
 const selectedDate = ref('Today');
 const selectedShowtime = ref<string | null>('19:15');
@@ -78,8 +87,17 @@ watchEffect(() => {
       </RouterLink>
     </div>
 
+    <!-- Invalid Id for movie -->
+    <div
+      v-if="isMovieIdValid"
+      class="bg-destructive/10 border-destructive/20 space-y-2 rounded-2xl border p-8 text-center"
+    >
+      <p class="text-destructive font-semibold">Invalid Id for movie {{ id }}</p>
+      <!-- <p class="text-muted-foreground text-xs">{{ error?.message }}</p> -->
+    </div>
+
     <!-- Loading State -->
-    <div v-if="isFetching" class="text-muted-foreground p-12 text-center">
+    <div v-else-if="isFetching" class="text-muted-foreground p-12 text-center">
       <Film class="text-primary mx-auto mb-3 h-10 w-10 animate-spin" />
       <p class="text-sm font-semibold">Loading movie details...</p>
     </div>

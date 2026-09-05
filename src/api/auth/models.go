@@ -7,18 +7,20 @@ import (
 
 type User struct {
 	gorm.Model
-	Username  string `gorm:"uniqueIndex"`
-	Email string `gorm:"uniqueIndex"`
+	Username     string `gorm:"uniqueIndex"`
+	Email        string `gorm:"uniqueIndex"`
 	PasswordHash string
-	Name string
+	Name         string
+	IsAdmin      bool   `gorm:"default:false"`
 }
 
-func NewUser(username, email, passwordHash, name string) User {
+func NewUser(username, email, passwordHash, name string, isAdmin bool) User {
 	return User{
 		Username:     username,
 		Email:        email,
 		PasswordHash: passwordHash,
 		Name:         name,
+		IsAdmin:      isAdmin,
 	}
 }
 

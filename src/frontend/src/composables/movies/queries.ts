@@ -45,7 +45,7 @@ export function useGetMoviesQuery() {
   });
 }
 
-export function useGetMovieQuery(id: Ref<string>) {
+export function useGetMovieQuery(id: Ref<number>) {
   return useQuery({
     queryKey: ['get-movie', id.value],
     queryFn: async () => {
