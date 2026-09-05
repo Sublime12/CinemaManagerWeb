@@ -1,7 +1,15 @@
 <script setup lang="ts">
 import { ROUTE_NAME } from '@/router';
 import { useRoute, useRouter } from 'vue-router';
-import { Clapperboard, Film, LayoutDashboard, LogIn, LogOut, ShieldCheck, User } from 'lucide-vue-next';
+import {
+  Clapperboard,
+  Film,
+  LayoutDashboard,
+  LogIn,
+  LogOut,
+  ShieldCheck,
+  User,
+} from 'lucide-vue-next';
 import { useGetMeQuery, useLogoutMutation } from '@/composables/auth/queries';
 import { computed } from 'vue';
 import { toast } from 'vue-sonner';

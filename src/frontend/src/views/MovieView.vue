@@ -87,13 +87,12 @@ watchEffect(() => {
       </RouterLink>
     </div>
 
-
     <!-- Invalid Id for movie -->
     <div
       v-if="isMovieIdValid"
       class="bg-destructive/10 border-destructive/20 space-y-2 rounded-2xl border p-8 text-center"
     >
-      <p class="text-destructive font-semibold">Invalid Id for movie {{id}}</p>
+      <p class="text-destructive font-semibold">Invalid Id for movie {{ id }}</p>
       <!-- <p class="text-muted-foreground text-xs">{{ error?.message }}</p> -->
     </div>
 
@@ -111,7 +110,6 @@ watchEffect(() => {
       <p class="text-destructive font-semibold">Could not load movie information.</p>
       <p class="text-muted-foreground text-xs">{{ error?.message }}</p>
     </div>
-
 
     <!-- Movie Details Content -->
     <div v-else-if="movie" class="space-y-10">
