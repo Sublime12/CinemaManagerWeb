@@ -15,3 +15,13 @@ func GetUserByUsername(ctx context.Context, db *gorm.DB, username string) (User,
 	}
 	return user, nil
 }
+
+func GetUserByID(ctx context.Context, db *gorm.DB, id uint) (User, error) {
+	user, err := gorm.G[User](db).
+		Where("id = ?", id).
+		First(ctx)
+	if err != nil {
+		return User{}, err
+	}
+	return user, nil
+}

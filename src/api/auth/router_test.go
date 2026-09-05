@@ -61,7 +61,7 @@ func TestLoginCorrectBodyInvalidCredentials(t *testing.T) {
 	require.NotNil(t, router)
 	body := gin.H {
 		"username": "testuser",
-		"password": "testpass",
+		"password": "wrongpassword",
 	}
 	
 	jsonBody, err := json.Marshal(body)

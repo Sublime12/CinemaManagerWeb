@@ -8,47 +8,42 @@ import { ShieldAlert, LogIn, Film } from 'lucide-vue-next';
 const { data: meData, isFetching } = useGetMeQuery();
 
 const isLoggedIn = computed(() => !!meData.value?.user);
+const isAdmin = computed(() => !!meData.value?.user && !!meData.value?.is_admin);
+
 </script>
 
 <template>
   <div class="min-h-screen">
-    <!-- Loading auth status -->
-    <div
-      v-if="isFetching"
-      class="flex min-h-[60vh] flex-col items-center justify-center space-y-3 text-slate-400"
-    >
-      <Film class="h-8 w-8 animate-spin text-rose-500" />
-      <p class="text-xs font-semibold">Verifying administrator session...</p>
+    <!-- Loading auth -->
+    <div v-if="isFetching" class="flex flex-col items-center justify-center min-h-[60vh] text-slate-400 space-y-3">
+      <Film class="w-8 h-8 animate-spin text-rose-500" />
+      <p class="text-xs font-semibold">Verifying administrator privileges...</p>
     </div>
 
-    <!-- Render Admin Dashboard if connected -->
-    <AppSidebar v-else-if="isLoggedIn" />
+    <!-- Render Admin -->
+    <AppSidebar v-else-if="isAdmin" />
 
-    <!-- Unauthorized Banner if NOT connected -->
-    <div v-else class="flex min-h-[65vh] flex-col items-center justify-center px-4">
-      <div
-        class="w-full max-w-md space-y-5 rounded-3xl border border-slate-800 bg-slate-900 p-8 text-center shadow-2xl"
-      >
-        <div
-          class="inline-flex rounded-2xl border border-rose-500/20 bg-rose-500/10 p-4 text-rose-500"
-        >
-          <ShieldAlert class="h-10 w-10" />
+    <!-- Unauthorized -->
+    <div v-else class="flex flex-col items-center justify-center min-h-[65vh] px-4">
+      <div class="max-w-md w-full rounded-3xl bg-slate-900 border border-slate-800 p-8 text-center space-y-5 shadow-2xl">
+        <div class="inline-flex p-4 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-500">
+          <ShieldAlert class="w-10 h-10" />
         </div>
 
         <div class="space-y-2">
-          <h2 class="text-2xl font-black text-white">Admin Access Restricted</h2>
-          <p class="text-xs leading-relaxed text-slate-400">
-            The Cinema Management Console requires administrator authentication. Please sign in to
-            access movie scheduling and theatre controls.
+          <h2 class="text-2xl font-black text-white">403 Admin Access Required</h2>
+          <p class="text-xs text-slate-400 leading-relaxed">
+            <span v-if="isLoggedIn">Your account does not have administrator privileges. Only admin accounts (such as <code class="text-rose-400 bg-slate-950 px-1 rounded">user01</code>) can access this page.</span>
+            <span v-else>The Cinema Management Console requires administrator authentication. Please sign in to access movie scheduling and theatre controls.</span>
           </p>
         </div>
 
         <RouterLink
           :to="{ name: ROUTE_NAME.LOGIN }"
-          class="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-rose-600 px-5 py-3 text-xs font-bold text-white shadow-lg shadow-rose-600/25 transition-all hover:bg-rose-500"
+          class="inline-flex items-center justify-center gap-2 w-full py-3 px-5 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs shadow-lg shadow-rose-600/25 transition-all"
         >
-          <LogIn class="h-4 w-4" />
-          <span>Sign In to Admin Portal</span>
+          <LogIn class="w-4 h-4" />
+          <span>{{ isLoggedIn ? 'Switch Account' : 'Sign In to Admin Portal' }}</span>
         </RouterLink>
       </div>
     </div>

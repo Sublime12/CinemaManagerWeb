@@ -14,7 +14,16 @@ const MessageSchema = z.object({
   message: z.string(),
 });
 
+const MeSchema = z.object({
+  user: z.number(),
+  is_admin: z.boolean(),
+  username: z.string().optional(),
+  name: z.string().optional(),
+});
+
 type Message = z.infer<typeof MessageSchema>;
+
+export type MeResponse = z.infer<typeof MeSchema>;
 
 export type LoginForm = z.infer<typeof LoginFormSchema>;
 
@@ -23,8 +32,8 @@ export function useGetMeQuery() {
     queryKey: ['me'],
     queryFn: async () => {
       try {
-        const response = await api.get<{ user: number }>(`/me`);
-        return response.data;
+        const response = await api.get<MeResponse>(`/me`);
+        return MeSchema.parse(response.data);
       } catch (err) {
         return null;
       }

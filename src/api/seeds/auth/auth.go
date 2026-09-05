@@ -23,17 +23,17 @@ func SeedUsers(db *gorm.DB) {
 
 	test_password, err := auth.HashPassword("testpass")
 	users := []auth.User{
-		auth.NewUser("testuser", "testuser@test.com", test_password, "Test User"),
-		auth.NewUser("user01", "user01@test.com", password, "User One"),
-		auth.NewUser("user02", "user02@test.com", password, "User Two"),
-		auth.NewUser("user03", "user03@test.com", password, "User Three"),
-		auth.NewUser("user04", "user04@test.com", password, "User Four"),
-		auth.NewUser("user05", "user05@test.com", password, "User Five"),
-		auth.NewUser("user06", "user06@test.com", password, "User Six"),
-		auth.NewUser("user07", "user07@test.com", password, "User Seven"),
-		auth.NewUser("user08", "user08@test.com", password, "User Eight"),
-		auth.NewUser("user09", "user09@test.com", password, "User Nine"),
-		auth.NewUser("user10", "user10@test.com", password, "User Ten"),
+		auth.NewUser("testuser", "testuser@test.com", test_password, "Test User", false),
+		auth.NewUser("user01", "user01@test.com", password, "User One", true),
+		auth.NewUser("user02", "user02@test.com", password, "User Two", false),
+		auth.NewUser("user03", "user03@test.com", password, "User Three", false),
+		auth.NewUser("user04", "user04@test.com", password, "User Four", false),
+		auth.NewUser("user05", "user05@test.com", password, "User Five", false),
+		auth.NewUser("user06", "user06@test.com", password, "User Six", false),
+		auth.NewUser("user07", "user07@test.com", password, "User Seven", false),
+		auth.NewUser("user08", "user08@test.com", password, "User Eight", false),
+		auth.NewUser("user09", "user09@test.com", password, "User Nine", false),
+		auth.NewUser("user10", "user10@test.com", password, "User Ten", false),
 	}
 
 	for _, u := range users {

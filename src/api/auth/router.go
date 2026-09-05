@@ -79,8 +79,26 @@ func logout(c *gin.Context) {
 
 func me(c *gin.Context) {
 	session := sessions.Default(c)
-	userId := session.Get(userIdKey)
-	c.JSON(http.StatusOK, gin.H{ "user": userId })
+	sessionUser:= session.Get(userIdKey)
+	if sessionUser == nil {
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+		return
+	}
+	userID := sessionUser.(uint)
+
+	db := core_db.GetSession(c)
+	ctx := c.Request.Context()
+	user, err := GetUserByID(ctx, db, userID)
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{"user": userID, "is_admin": false})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"user":     userID,
+		"username": user.Username,
+		"name":     user.Name,
+		"is_admin": user.IsAdmin,
+	})
 }
 
 func AuthRequired(c *gin.Context) {
@@ -89,6 +107,29 @@ func AuthRequired(c *gin.Context) {
 	if user == nil {
 		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
 			"error": "Unauthorized, User is not login",
+		})
+		return
+	}
+	c.Next()
+}
+
+func AdminRequired(c *gin.Context) {
+	session := sessions.Default(c)
+	sessionUser := session.Get(userIdKey)
+	if sessionUser == nil {
+		c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{
+			"error": "Unauthorized, User is not logged in",
+		})
+		return
+	}
+	userID := sessionUser.(uint)
+
+	db := core_db.GetSession(c)
+	ctx := c.Request.Context()
+	user, err := GetUserByID(ctx, db, userID)
+	if err != nil || !user.IsAdmin {
+		c.AbortWithStatusJSON(http.StatusForbidden, gin.H{
+			"error": "Forbidden, Administrator privileges required",
 		})
 		return
 	}

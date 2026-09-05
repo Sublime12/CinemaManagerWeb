@@ -22,7 +22,7 @@ func MapMoviesRoutes(api *gin.RouterGroup) {
 	router.GET("/:id", getMovie)
 
 	authRouter := router.Group("")
-	authRouter.Use(auth.AuthRequired)
+	authRouter.Use(auth.AdminRequired)
 
 	authRouter.POST("", postMovie)
 	authRouter.POST("/upload", uploadPoster)
@@ -49,7 +49,7 @@ func getMovie(c *gin.Context) {
 	idInt, err := strconv.Atoi(c.Param("id"))
 	id := uint(idInt)
 	if err != nil {
-		c.AbortWithError(http.StatusBadRequest, err)
+		AbortWithError(c, errors.New("UserId should be integer"), http.StatusBadRequest)
 		return
 	}
 
