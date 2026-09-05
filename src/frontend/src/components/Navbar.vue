@@ -21,7 +21,7 @@ const { data: meData } = useGetMeQuery();
 const { mutateAsync: logoutMutate } = useLogoutMutation();
 
 const isLoggedIn = computed(() => !!meData.value?.user);
-const isAdmin = computed(() => !!meData.value?.user && !!meData.value?.is_admin);
+const isAdmin = computed(() => !!meData.value?.is_admin);
 
 const handleLogout = async () => {
   try {

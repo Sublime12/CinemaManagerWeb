@@ -5,10 +5,10 @@ import { computed } from 'vue';
 import { ROUTE_NAME } from '@/router';
 import { ShieldAlert, LogIn, Film } from 'lucide-vue-next';
 
-const { data: meData, isFetching } = useGetMeQuery();
+const { data: meData, isFetching, isError, error } = useGetMeQuery();
 
 const isLoggedIn = computed(() => !!meData.value?.user);
-const isAdmin = computed(() => !!meData.value?.user && !!meData.value?.is_admin);
+const isAdmin = computed(() => !!meData.value?.is_admin);
 </script>
 
 <template>
@@ -20,6 +20,13 @@ const isAdmin = computed(() => !!meData.value?.user && !!meData.value?.is_admin)
     >
       <Film class="h-8 w-8 animate-spin text-rose-500" />
       <p class="text-xs font-semibold">Verifying administrator privileges...</p>
+    </div>
+    <div
+      v-else-if="isError"
+      class="flex min-h-[60vh] flex-col items-center justify-center space-y-3 text-slate-400"
+    >
+      <Film class="h-8 w-8 text-rose-500" />
+      <p class="text-xs font-semibold">Unexpected error: {{ error }}</p>
     </div>
 
     <!-- Render Admin -->

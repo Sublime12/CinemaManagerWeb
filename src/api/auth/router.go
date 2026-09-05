@@ -93,12 +93,9 @@ func me(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{"user": userID, "is_admin": false})
 		return
 	}
-	c.JSON(http.StatusOK, gin.H{
-		"user":     userID,
-		"username": user.Username,
-		"name":     user.Name,
-		"is_admin": user.IsAdmin,
-	})
+
+	meResponse := ToMeResponse(user)
+	c.JSON(http.StatusOK, meResponse)
 }
 
 func AuthRequired(c *gin.Context) {

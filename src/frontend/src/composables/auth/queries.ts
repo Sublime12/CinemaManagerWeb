@@ -31,12 +31,11 @@ export function useGetMeQuery() {
   return useQuery({
     queryKey: ['me'],
     queryFn: async () => {
-      try {
-        const response = await api.get<MeResponse>(`/me`);
-        return MeSchema.parse(response.data);
-      } catch (err) {
-        return null;
-      }
+      const response = await api.get<MeResponse>(`/me`, {
+        validateStatus: (status) => (status >= 200 && status < 300) || status === 401,
+      });
+      if (response.status == 401) return null;
+      return MeSchema.parse(response.data);
     },
     retry: false,
     staleTime: 1000 * 60 * 5,
