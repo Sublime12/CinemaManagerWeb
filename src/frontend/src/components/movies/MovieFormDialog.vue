@@ -289,7 +289,9 @@ const onSubmit = handleSubmit(
               </div>
               <div class="text-center">
                 <span class="text-xs font-semibold text-rose-400">
-                  {{ isEditing ? 'Click to upload new poster image' : 'Click to upload poster image' }}
+                  {{
+                    isEditing ? 'Click to upload new poster image' : 'Click to upload poster image'
+                  }}
                 </span>
                 <p class="text-[10px] text-slate-500">PNG, JPG, WEBP up to 10MB</p>
               </div>
