@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import type { Movie } from '@/composables/movies/queries';
-import { Clock, Star, Ticket, Calendar, Globe } from 'lucide-vue-next';
+import { Clock, Star, Ticket, Calendar, Globe, Pencil } from 'lucide-vue-next';
 import { computed } from 'vue';
 import moment from 'moment';
 import defaultPoster from '@/assets/movie-img-1.webp';
+import MovieFormDialog from '@/components/movies/MovieFormDialog.vue';
 
 const props = defineProps<{
   movie: Movie;
@@ -49,7 +50,7 @@ const releaseYear = computed(() => {
 
       <!-- Top Overlay Badges -->
       <div
-        class="pointer-events-none absolute top-3 right-3 left-3 flex items-center justify-between"
+        class="pointer-events-none absolute top-3 right-3 left-3 z-10 flex items-center justify-between"
       >
         <span
           class="inline-flex items-center gap-1 rounded-md border border-amber-400/30 bg-black/70 px-2.5 py-1 text-[11px] font-bold text-amber-400 backdrop-blur-md"
@@ -73,9 +74,18 @@ const releaseYear = computed(() => {
 
       <!-- Quick Action Overlay Button -->
       <div
-        class="absolute right-4 bottom-4 left-4 translate-y-2 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100"
+        class="absolute right-4 bottom-4 left-4 z-10 translate-y-2 opacity-0 transition-all duration-300 group-hover:translate-y-0 group-hover:opacity-100"
       >
+        <MovieFormDialog v-if="isAdmin" :movie="movie">
+          <button
+            class="flex w-full items-center justify-center gap-2 rounded-xl border border-slate-700 bg-slate-950/90 px-4 py-2.5 text-xs font-bold text-white shadow-lg transition-all hover:border-rose-500 hover:bg-slate-900"
+          >
+            <Pencil class="h-4 w-4 text-rose-500" />
+            <span>Edit Movie Details</span>
+          </button>
+        </MovieFormDialog>
         <button
+          v-else
           class="bg-primary shadow-primary/30 flex w-full items-center justify-center gap-2 rounded-xl px-4 py-2.5 text-xs font-semibold text-white shadow-lg hover:bg-rose-600"
         >
           <Ticket class="h-4 w-4" />
@@ -98,11 +108,13 @@ const releaseYear = computed(() => {
           </span>
         </div>
 
-        <h3
-          class="text-foreground group-hover:text-primary line-clamp-1 text-base font-bold transition-colors"
-        >
-          {{ movie.name }}
-        </h3>
+        <div class="flex items-center justify-between gap-2">
+          <h3
+            class="text-foreground group-hover:text-primary line-clamp-1 text-base font-bold transition-colors"
+          >
+            {{ movie.name }}
+          </h3>
+        </div>
 
         <p class="text-muted-foreground mt-1.5 line-clamp-2 text-xs leading-relaxed">
           {{ movie.description }}

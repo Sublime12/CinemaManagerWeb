@@ -9,7 +9,6 @@ import {
   SidebarHeader,
   SidebarInset,
   SidebarMenu,
-  SidebarMenuButton,
   SidebarMenuItem,
   SidebarProvider,
   SidebarRail,
@@ -20,8 +19,6 @@ import {
   Film,
   Building2,
   Calendar,
-  LayoutDashboard,
-  Ticket,
   Users,
   DollarSign,
   TrendingUp,
@@ -30,7 +27,7 @@ import {
 import { computed, ref } from 'vue';
 import MovieCard from './movies/MovieCard.vue';
 import { useGetMoviesQuery } from '@/composables/movies/queries';
-import CreateMovieDialog from '@/components/movies/CreateMovieDialog.vue';
+import MovieFormDialog from '@/components/movies/MovieFormDialog.vue';
 import { ROUTE_NAME } from '@/router';
 
 enum ADMIN_PANEL {
@@ -91,7 +88,7 @@ const theatres = [
           <SidebarMenuItem>
             <div class="flex items-center gap-3 px-2 py-1">
               <div
-                class="from-primary shadow-primary/20 rounded-xl bg-gradient-to-tr via-rose-600 to-amber-500 p-2 text-white shadow-md"
+                class="from-primary shadow-primary/20 rounded-xl bg-linear-to-tr via-rose-600 to-amber-500 p-2 text-white shadow-md"
               >
                 <GalleryVerticalEnd class="h-5 w-5" />
               </div>
@@ -192,7 +189,7 @@ const theatres = [
         </div>
 
         <div class="flex items-center gap-3">
-          <CreateMovieDialog />
+          <MovieFormDialog />
         </div>
       </div>
 

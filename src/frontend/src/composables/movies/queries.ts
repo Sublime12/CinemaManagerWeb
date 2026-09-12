@@ -96,3 +96,30 @@ export function useCreateMovieMutation() {
     },
   });
 }
+
+export function useUpdateMovieMutation() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationKey: ['update-movie'],
+    mutationFn: async ({ id, form }: { id: number; form: CreateMovieForm }) => {
+      const payload = {
+        name: form.name,
+        description: form.description,
+        published_at: new Date(form.published_at).toISOString(),
+        length: Number(form.length_minutes) * 60 * 1e9,
+        language: form.language,
+        genres: form.genres
+          .split(',')
+          .map((g) => g.trim())
+          .filter(Boolean),
+        image_url: form.image_url || '',
+      };
+      const response = await api.put(`/movies/${id}`, payload);
+      return response.data;
+    },
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({ queryKey: ['get-movies'] });
+      queryClient.invalidateQueries({ queryKey: ['get-movie', variables.id] });
+    },
+  });
+}

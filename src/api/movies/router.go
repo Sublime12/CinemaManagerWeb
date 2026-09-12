@@ -25,7 +25,47 @@ func MapMoviesRoutes(api *gin.RouterGroup) {
 	authRouter.Use(auth.AdminRequired)
 
 	authRouter.POST("", postMovie)
+	authRouter.PUT("/:id", updateMovie)
 	authRouter.POST("/upload", uploadPoster)
+}
+
+func updateMovie(c *gin.Context) {
+	idInt, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		AbortWithError(c, errors.New("Movie ID must be an integer"), http.StatusBadRequest)
+		return
+	}
+	id := uint(idInt)
+
+	var movieRequest CreateMovieRequest
+	err = c.ShouldBindJSON(&movieRequest)
+	if err != nil {
+		AbortWithError(c, err, http.StatusBadRequest)
+		return
+	}
+
+	ctx := c.Request.Context()
+	db := core_db.GetSession(c)
+
+	var movie Movie
+	if err := db.WithContext(ctx).Where("id = ?", id).First(&movie).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			AbortWithError(c, errors.New("Movie not found"), http.StatusNotFound)
+			return
+		}
+		AbortWithError(c, errors.New("Internal server error"), http.StatusInternalServerError)
+		return
+	}
+
+	UpdateMovieFromRequest(&movie, movieRequest)
+
+	if err := db.WithContext(ctx).Save(&movie).Error; err != nil {
+		c.Error(err)
+		AbortWithError(c, errors.New("Internal server error"), http.StatusInternalServerError)
+		return
+	}
+
+	c.JSON(http.StatusOK, MovieResponseFrom(movie))
 }
 
 
